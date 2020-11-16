@@ -1,16 +1,15 @@
 package me.giverplay.focalib.command
 
-import me.giverplay.focalib.FocaLib
+import me.giverplay.focalib.FocaPlugin
 import org.apache.commons.lang.Validate
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
-import java.lang.IllegalStateException
 import java.util.logging.Level
 
-class CommandManager(plugin: FocaLib) : CommandExecutor
+class CommandManager(plugin: FocaPlugin) : CommandExecutor
 {
-    private val plugin: FocaLib = plugin
+    private val plugin: FocaPlugin = plugin
     private val commands = HashMap<String, FocaCommand>();
 
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean

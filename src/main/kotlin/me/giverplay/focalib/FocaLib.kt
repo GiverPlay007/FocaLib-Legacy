@@ -1,16 +1,24 @@
 package me.giverplay.focalib
 
-import org.bukkit.plugin.java.JavaPlugin;
+import me.giverplay.focalib.command.CommandManager
+import org.bukkit.Bukkit
+import org.bukkit.event.HandlerList
 
-class FocaLib: JavaPlugin()
+class FocaLib(plugin: FocaPlugin)
 {
-    override fun onEnable()
+    val plugin: FocaPlugin = plugin
+
+    val commandManager: CommandManager = CommandManager(plugin)
+
+    fun enable()
     {
-        logger.info("Habilitando!")
+
     }
 
-    override fun onDisable()
+    fun disable()
     {
-        logger.info("Agora sim")
+        // Garantir que seja tudo limpo, caso esse método venha a ser chamado por outra criatura
+        HandlerList.unregisterAll(plugin)
+        Bukkit.getScheduler().cancelTasks(plugin)
     }
 }

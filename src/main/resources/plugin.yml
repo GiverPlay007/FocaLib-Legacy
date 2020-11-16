@@ -2,4 +2,4 @@ name: FocaLib
 description: Main library
 author: GiverPlay
 version: 1.0.0
-main: me.giverplay.focalib.FocaLib
+main: me.giverplay.focalib.FocaPlugin
