@@ -2,7 +2,6 @@ package me.giverplay.focalib.player
 
 import me.giverplay.focalib.FocaLib
 import org.apache.commons.lang.Validate
-import org.bukkit.entity.Player
 
 class PlayerManager(plugin: FocaLib)
 {
