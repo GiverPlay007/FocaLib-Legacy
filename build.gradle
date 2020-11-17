@@ -13,6 +13,10 @@ repositories {
         name = 'spigotmc-repo'
         url = 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/'
     }
+
+    flatDir {
+        dirs 'libs'
+    }
 }
 
 dependencies {
@@ -20,4 +24,5 @@ dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
 
     compileOnly 'org.spigotmc:spigot-api:1.16.4-R0.1-SNAPSHOT'
+    compileOnly name: 'spigot-1.16.4'
 }

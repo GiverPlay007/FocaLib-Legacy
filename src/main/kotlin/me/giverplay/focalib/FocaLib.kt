@@ -10,6 +10,9 @@ class FocaLib(plugin: FocaPlugin)
 
     val commandManager: CommandManager = CommandManager(plugin)
 
+    val logger
+      get() = plugin.logger
+
     fun enable()
     {
 
