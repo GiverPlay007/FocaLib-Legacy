@@ -40,5 +40,5 @@ class PlayerManager(plugin: FocaLib)
         plugin.logger.info("Jogador ${player.name} foi desregistrado!")
     }
 
-    fun getPlayer(name: String): FocaPlayer? = players[name]
+    fun getPlayer(name: String): FocaPlayer? = synchronized(players) { return players[name] }
 }
