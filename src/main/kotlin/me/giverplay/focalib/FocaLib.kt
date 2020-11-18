@@ -1,6 +1,7 @@
 package me.giverplay.focalib
 
 import me.giverplay.focalib.command.CommandManager
+import me.giverplay.focalib.player.PlayerManager
 import org.bukkit.Bukkit
 import org.bukkit.event.HandlerList
 import org.bukkit.event.Listener
@@ -10,6 +11,7 @@ class FocaLib(plugin: FocaPlugin)
     val plugin: FocaPlugin = plugin
 
     val commandManager: CommandManager = CommandManager(plugin)
+    val playerManager: PlayerManager = PlayerManager(this)
 
     val logger
       get() = plugin.logger
