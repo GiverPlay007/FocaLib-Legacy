@@ -17,10 +17,6 @@ public class PlayerManager
 	private List<String> spys = new ArrayList<String>();
 	private List<Player> hidden = new ArrayList<Player>();
 
-	public PlayerManager()
-	{
-	}
-
 	public void playerDisconnect(Player p)
 	{
 		setPlayerFocusedChannel(p, null, false);

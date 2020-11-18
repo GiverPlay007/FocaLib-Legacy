@@ -1,6 +1,5 @@
 package br.com.devpaulo.legendchat.commands;
 
-import br.com.devpaulo.legendchat.Legendchat;
 import br.com.devpaulo.legendchat.api.LegendchatAPI;
 import br.com.devpaulo.legendchat.channels.ChannelManager;
 import br.com.devpaulo.legendchat.channels.types.Channel;
@@ -13,11 +12,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
-import org.bukkit.event.player.PlayerCommandPreprocessEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerKickEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.plugin.Plugin;
 
 public class LegendchatCommand implements CommandExecutor
@@ -47,17 +42,7 @@ public class LegendchatCommand implements CommandExecutor
         LegendchatAPI.load(false);
         Plugin lc = Bukkit.getPluginManager().getPlugin("Legendchat");
         lc.reloadConfig();
-        LegendchatAPI.getCensorManager().loadCensoredWords(lc.getConfig().getStringList("censor.censored_words"));
         LegendchatAPI.getChannelManager().loadChannels();
-  
-        Legendchat.bungeeActive = false;
-        if (lc.getConfig().getBoolean("bungeecord.use"))
-        {
-          if (LegendchatAPI.getChannelManager().existsChannel(lc.getConfig().getString("bungeecord.channel")))
-          {
-            Legendchat.bungeeActive = true;
-          }
-        }
         PlayerJoinEvent.getHandlerList().unregister(lc);
         PlayerQuitEvent.getHandlerList().unregister(lc);
         PlayerKickEvent.getHandlerList().unregister(lc);

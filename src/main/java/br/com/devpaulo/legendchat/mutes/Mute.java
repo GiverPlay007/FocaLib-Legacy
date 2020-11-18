@@ -42,5 +42,4 @@ public class Mute {
 	public String getPlayerName() {
 		return name;
 	}
-
 }

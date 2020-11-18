@@ -40,7 +40,7 @@ public class ChannelCommand implements CommandExecutor
     }
     else
     {
-      Channel c = null;
+      Channel c;
       ChannelManager cm = LegendchatAPI.getChannelManager();
       c = cm.getChannelByName(args[0].toLowerCase());
       if (c==null)

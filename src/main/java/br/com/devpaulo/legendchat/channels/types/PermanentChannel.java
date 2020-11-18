@@ -9,18 +9,18 @@ import br.com.devpaulo.legendchat.api.LegendchatAPI;
 import br.com.devpaulo.legendchat.channels.utils.ChannelUtils;
 
 public class PermanentChannel implements Channel {
-	private String name = "";
-	private String nick = "";
-	private String format = "";
-	private String color = "";
-	private String color2 = "";
-	private boolean shortcut = false;
-	private boolean focus = false;
-	private double distance = 0;
-	private boolean crossworlds = false;
-	private double cost = 0;
-	private boolean show_cost_msg = false;
-	private int delay = 0;
+	private String name;
+	private String nick;
+	private String format;
+	private String color;
+	private String color2;
+	private boolean shortcut;
+	private boolean focus;
+	private double distance;
+	private boolean crossworlds;
+	private double cost;
+	private boolean show_cost_msg;
+	private int delay;
 	public PermanentChannel(String name, String nick, String format, String color, boolean shortcut, boolean focus, double distance, boolean crossworlds, int delay, double cost,boolean show_cost_msg) {
 		this.name=name;
 		this.nick=nick;
@@ -150,5 +150,4 @@ public class PermanentChannel implements Channel {
 	public void sendMessage(Player sender, String message, String bukkit_format, boolean cancelled) {
 		ChannelUtils.realMessage(this, sender, message, bukkit_format, cancelled);
 	}
-	
 }

@@ -1,18 +1,16 @@
 package br.com.devpaulo.legendchat.channels;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
+import br.com.devpaulo.legendchat.api.LegendchatAPI;
+import br.com.devpaulo.legendchat.channels.types.Channel;
+import br.com.devpaulo.legendchat.channels.types.PermanentChannel;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
-import br.com.devpaulo.legendchat.api.LegendchatAPI;
-import br.com.devpaulo.legendchat.channels.types.BungeecordChannel;
-import br.com.devpaulo.legendchat.channels.types.Channel;
-import br.com.devpaulo.legendchat.channels.types.PermanentChannel;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 public class ChannelManager {
 	private HashMap<String,Channel> channels = new HashMap<String,Channel>();
@@ -111,10 +109,7 @@ public class ChannelManager {
 	
 	private void loadChannel(File channel, String bungee) {
 		YamlConfiguration channel2 = YamlConfiguration.loadConfiguration(channel);
-		if(channel2.getString("name").toLowerCase().equals(bungee.toLowerCase()))
-			createPermanentChannel(new BungeecordChannel(channel2.getString("name"),channel2.getString("nickname"),channel2.getString("format"),channel2.getString("color"),channel2.getBoolean("shortcutAllowed"),channel2.getBoolean("needFocus"),channel2.getDouble("distance"),channel2.getBoolean("crossworlds"),channel2.getInt("delayPerMessage"),channel2.getDouble("costPerMessage"),channel2.getBoolean("showCostMessage")));
-		else
-			createPermanentChannel(new PermanentChannel(channel2.getString("name"),channel2.getString("nickname"),channel2.getString("format"),channel2.getString("color"),channel2.getBoolean("shortcutAllowed"),channel2.getBoolean("needFocus"),channel2.getDouble("distance"),channel2.getBoolean("crossworlds"),channel2.getInt("delayPerMessage"),channel2.getDouble("costPerMessage"),channel2.getBoolean("showCostMessage")));
+		createPermanentChannel(new PermanentChannel(channel2.getString("name"),channel2.getString("nickname"),channel2.getString("format"),channel2.getString("color"),channel2.getBoolean("shortcutAllowed"),channel2.getBoolean("needFocus"),channel2.getDouble("distance"),channel2.getBoolean("crossworlds"),channel2.getInt("delayPerMessage"),channel2.getDouble("costPerMessage"),channel2.getBoolean("showCostMessage")));
 	}
 	
 }

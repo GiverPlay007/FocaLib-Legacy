@@ -40,5 +40,4 @@ public class MessageManager {
 	public void registerLanguageFile(File f) {
 		file=f;
 	}
-	
 }

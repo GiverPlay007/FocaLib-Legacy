@@ -38,10 +38,6 @@ public class PrivateMessageManager
     from = e.getSender();
     to = e.getReceiver();
     msg = e.getMessage();
-		if (LegendchatAPI.isCensorActive())
-		{
-			msg = LegendchatAPI.getCensorManager().censorFunction(msg);
-		}
 
     boolean ignored = false;
 		if (to!=console && from!=console)
@@ -74,11 +70,6 @@ public class PrivateMessageManager
 		if (LegendchatAPI.logToBukkit())
 		{
 			Bukkit.getConsoleSender().sendMessage(spy);
-		}
-
-		if (LegendchatAPI.logToFile())
-		{
-			LegendchatAPI.getLogManager().addLogToCache(ChatColor.stripColor(spy));
 		}
   }
 

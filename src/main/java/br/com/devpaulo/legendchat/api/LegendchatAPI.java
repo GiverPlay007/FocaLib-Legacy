@@ -1,24 +1,19 @@
 package br.com.devpaulo.legendchat.api;
 
-import java.io.File;
-import java.util.HashMap;
-
-import org.bukkit.Bukkit;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.plugin.Plugin;
-
-import br.com.devpaulo.legendchat.Legendchat;
-import br.com.devpaulo.legendchat.censor.CensorManager;
 import br.com.devpaulo.legendchat.channels.ChannelManager;
-import br.com.devpaulo.legendchat.channels.types.BungeecordChannel;
 import br.com.devpaulo.legendchat.channels.types.Channel;
 import br.com.devpaulo.legendchat.delays.DelayManager;
 import br.com.devpaulo.legendchat.ignore.IgnoreManager;
-import br.com.devpaulo.legendchat.logs.LogManager;
 import br.com.devpaulo.legendchat.messages.MessageManager;
 import br.com.devpaulo.legendchat.mutes.MuteManager;
 import br.com.devpaulo.legendchat.players.PlayerManager;
 import br.com.devpaulo.legendchat.privatemessages.PrivateMessageManager;
+import org.bukkit.Bukkit;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.plugin.Plugin;
+
+import java.io.File;
+import java.util.HashMap;
 
 public class LegendchatAPI
 {
@@ -28,13 +23,8 @@ public class LegendchatAPI
 	private static boolean forceRemoveDoubleSpacesFromBukkit = false;
 	private static boolean sendFakeMessageToChat = false;
 	private static boolean blockShortcutsWhenCancelled = false;
-	private static boolean isBungeecordActive = false;
-	private static boolean isCensorActive = false;
-	private static boolean logToFile = false;
 	private static boolean maintainSpyMode = false;
-	private static int logToFileTime = 10;
 	private static Channel defaultChannel = null;
-	private static BungeecordChannel bungeecordChannel = null;
 	private static Plugin plugin = null;
 	private static HashMap<String,String> formats = new HashMap<String,String>();
 	private static HashMap<String,String> pm_formats = new HashMap<String,String>();
@@ -47,8 +37,6 @@ public class LegendchatAPI
 	private static PrivateMessageManager pmm = null;
 	private static DelayManager dm = null;
 	private static MuteManager mum = null;
-	private static CensorManager cem = null;
-	private static LogManager lm = null;
 	
 	public static ChannelManager getChannelManager() {
 		return cm;
@@ -78,14 +66,6 @@ public class LegendchatAPI
 		return mum;
 	}
 	
-	public static CensorManager getCensorManager() {
-		return cem;
-	}
-
-	public static LogManager getLogManager() {
-		return lm;
-	}
-	
 	public static Channel getDefaultChannel() {
 		return defaultChannel;
 	}
@@ -113,29 +93,9 @@ public class LegendchatAPI
 	public static boolean blockShortcutsWhenCancelled() {
 		return blockShortcutsWhenCancelled;
 	}
-	
-	public static boolean isBungeecordActive() {
-		return isBungeecordActive;
-	}
-	
-	public static boolean isCensorActive() {
-		return isCensorActive;
-	}
-	
-	public static boolean logToFile() {
-		return logToFile;
-	}
-	
+
 	public static boolean maintainSpyMode() {
 		return maintainSpyMode;
-	}
-	
-	public static int getLogToFileTime() {
-		return logToFileTime;
-	}
-	
-	public static BungeecordChannel getBungeecordChannel() {
-		return bungeecordChannel;
 	}
 	
 	public static Plugin getPlugin() {
@@ -172,8 +132,6 @@ public class LegendchatAPI
 			pmm=new PrivateMessageManager();
 			dm=new DelayManager();
 			mum=new MuteManager();
-			cem=new CensorManager();
-			lm=new LogManager();
 			return;
 		}
 		FileConfiguration fc = Bukkit.getPluginManager().getPlugin("Legendchat").getConfig();
@@ -185,14 +143,6 @@ public class LegendchatAPI
 		sendFakeMessageToChat=fc.getBoolean("send_fake_message_to_chat",true);
 		blockShortcutsWhenCancelled=fc.getBoolean("block_shortcuts_when_cancelled",true);
 		maintainSpyMode=fc.getBoolean("maintain_spy_mode",false);
-		isBungeecordActive=Legendchat.bungeeActive;
-		bungeecordChannel=(BungeecordChannel) getChannelManager().getChannelByName(fc.getString("bungeecord.channel","bungeecord"));
-		isCensorActive=fc.getBoolean("censor.use",true);
-		LegendchatAPI.getCensorManager().loadCensoredWords(fc.getStringList("censor.censored_words"));
-		logToFile=fc.getBoolean("log_to_file.use",false);
-		logToFileTime=fc.getInt("log_to_file.time",10);
-		if(logToFile)
-			lm.startSavingScheduler();
 		formats.clear();
 		pm_formats.clear();
 		for(String f : fc.getConfigurationSection("format").getKeys(false))
