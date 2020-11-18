@@ -14,6 +14,7 @@ import br.com.devpaulo.messages.MessageManager
 import br.com.devpaulo.mutes.MuteManager
 import br.com.devpaulo.privatemessages.PrivateMessageManager
 import me.giverplay.focalib.FocaLib
+import me.giverplay.focalib.player.FocaPlayer
 import me.giverplay.focalib.player.PlayerManager
 import net.milkbowl.vault.chat.Chat
 import net.milkbowl.vault.economy.Economy
@@ -364,6 +365,22 @@ class ChannelManager(private val plugin: FocaLib) {
             Bukkit.getPluginManager().callEvent(e)
             realMessage0(e, c, effectiveGastou)
         })
+    }
+
+    fun performTell(player: FocaPlayer, message: String)
+    {
+        // TODO
+    }
+
+    fun performMessage(player: FocaPlayer, message: String)
+    {
+        // TODO
+    }
+
+    fun checkChannel(string: String): Channel?
+    {
+        // TODO
+        return null
     }
 
     private fun realMessage0(e: ChatMessageEvent, c: Channel, gastou: Boolean) {

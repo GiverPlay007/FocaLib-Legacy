@@ -1,6 +1,7 @@
 package me.giverplay.focalib.player
 
 import me.giverplay.focalib.chat.channel.Channel
+import me.giverplay.focalib.utils.Messages
 import org.bukkit.ChatColor
 import org.bukkit.craftbukkit.v1_16_R3.entity.CraftPlayer
 import org.bukkit.entity.Player
@@ -20,6 +21,8 @@ class FocaPlayer(val player: Player)
 
     var focusedChannel: Channel? = null
 
+    var tellLocked: FocaPlayer? = null
+
     fun hasPermission(permission: String): Boolean = player.hasPermission(permission)
 
     fun hasAnyPermission(vararg perms: String): Boolean
@@ -30,6 +33,12 @@ class FocaPlayer(val player: Player)
 
         return false
     }
+
+    fun sendMessage(msg: String) = player.sendMessage(ChatColor.translateAlternateColorCodes('&', msg))
+
+    fun sendRaw(msg: String) = player.sendMessage(msg)
+
+    fun send(msg: String) = Messages.msg(msg)?.let { player.sendMessage(it) }
 
     fun canSeeChannel(channel: Channel): Boolean =
         hasPermission("foca.chat.channel.${channel.name.toLowerCase()}")

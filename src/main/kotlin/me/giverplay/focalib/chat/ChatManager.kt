@@ -2,6 +2,7 @@ package me.giverplay.focalib.chat
 
 import me.giverplay.focalib.FocaLib
 import me.giverplay.focalib.chat.channel.ChannelManager
+import me.giverplay.focalib.listeners.ListenerChat
 import me.giverplay.focalib.utils.DependencyException
 import me.giverplay.focalib.utils.Messages
 import net.milkbowl.vault.chat.Chat
@@ -17,6 +18,8 @@ class ChatManager(private val plugin: FocaLib)
     init {
         if (!setupChat())
             throw DependencyException(Messages.msg("error.dependency.setupchat"))
+
+        plugin.registerEvent(ListenerChat(plugin, channelManager))
     }
 
     private fun setupChat(): Boolean {

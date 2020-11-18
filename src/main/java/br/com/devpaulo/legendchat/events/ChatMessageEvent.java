@@ -6,13 +6,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import me.giverplay.focalib.chat.channel.ChannelManager;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
-import br.com.devpaulo.legendchat.LegendchatAPI;
 import me.giverplay.focalib.chat.channel.Channel;
 
 public class ChatMessageEvent extends Event implements Cancellable {
@@ -108,7 +108,7 @@ public class ChatMessageEvent extends Event implements Cancellable {
 	}
 	
 	public String baseFormatToFormat(String base_format) {
-		return LegendchatAPI.format(base_format);
+		return ChannelManager.format(base_format);
 	}
 	
 	public List<String> getTags() {

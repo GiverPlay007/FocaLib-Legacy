@@ -18,6 +18,7 @@ error:
   command-disabled: '&cEste comando está desabilitado'
   console: '&cEste comando só pode ser executado por jogadores.'
   unexpected: '&cErro interno inexperado, por favor, contate um admnistrador!'
+  nochannel: '&cVocê não está em nenhum canal de chat!'
 
 debug:
   internal:

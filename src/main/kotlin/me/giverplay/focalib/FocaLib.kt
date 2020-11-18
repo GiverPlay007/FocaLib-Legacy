@@ -31,9 +31,7 @@ class FocaLib(plugin: FocaPlugin)
 
     fun disable()
     {
-        // Garantir que seja tudo limpo, caso esse método venha a ser chamado por outra criatura
-        HandlerList.unregisterAll(plugin)
-        Bukkit.getScheduler().cancelTasks(plugin)
+
     }
 
     fun registerEvent(listener: Listener) = Bukkit.getPluginManager().registerEvents(listener, plugin)
