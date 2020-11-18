@@ -3,6 +3,7 @@ package me.giverplay.focalib
 import me.giverplay.focalib.command.CommandManager
 import org.bukkit.Bukkit
 import org.bukkit.event.HandlerList
+import org.bukkit.event.Listener
 
 class FocaLib(plugin: FocaPlugin)
 {
@@ -24,4 +25,6 @@ class FocaLib(plugin: FocaPlugin)
         HandlerList.unregisterAll(plugin)
         Bukkit.getScheduler().cancelTasks(plugin)
     }
+
+    fun registerEvent(listener: Listener) = Bukkit.getPluginManager().registerEvents(listener, plugin)
 }

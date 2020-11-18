@@ -1,8 +1,10 @@
 package me.giverplay.focalib.player
 
 import me.giverplay.focalib.FocaLib
+import me.giverplay.focalib.listeners.ListenerPlayerManager
 import me.giverplay.focalib.utils.Messages.Companion.msg
 import org.apache.commons.lang.Validate
+import org.bukkit.entity.Player
 
 class PlayerManager(plugin: FocaLib)
 {
@@ -22,7 +24,7 @@ class PlayerManager(plugin: FocaLib)
         plugin.logger.info(msg("debug.internal.regplayer", player.name, msg("info.internal.reg")))
     }
 
-    fun unregisterPlayer(player: FocaPlayer)
+    fun unregisterPlayer(player: Player)
     {
         Validate.notNull(player, msg("error.internal.nullplayer"))
 
@@ -34,11 +36,15 @@ class PlayerManager(plugin: FocaLib)
 
         synchronized(players)
         {
-            players.remove(player)
+            players.remove(player.name)
         }
 
         plugin.logger.info(msg("debug.internal.regplayer", player.name, msg("info.internal.unreg")))
     }
 
     fun getPlayer(name: String): FocaPlayer? = synchronized(players) { return players[name] }
+
+    init {
+        plugin.registerEvent(ListenerPlayerManager(this))
+    }
 }

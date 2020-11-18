@@ -8,10 +8,8 @@ import org.bukkit.command.TabCompleter
 abstract class FocaCommand(name: String, allowConsole: Boolean) : TabCompleter
 {
     val isAllowConsole: Boolean
-
     val name: String
-
-    var isEnabled = true
+    var isEnabled: Boolean = true
 
     abstract fun execute(sender: CommandSource?, args: Array<out String>)
 
@@ -22,7 +20,6 @@ abstract class FocaCommand(name: String, allowConsole: Boolean) : TabCompleter
     fun sendUsage(source: CommandSource, usage: String, example: String? = null)
     {
         Validate.notNull(source, msg("error.internal.nullsource"))
-
         source.sendMessage(msg("info.usage", usage))
 
         if (example != null)
