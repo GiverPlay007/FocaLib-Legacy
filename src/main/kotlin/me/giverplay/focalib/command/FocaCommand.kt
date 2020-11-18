@@ -1,5 +1,7 @@
 package me.giverplay.focalib.command
 
+import me.giverplay.focalib.utils.Messages.Companion.msg
+
 import org.apache.commons.lang.Validate
 import org.bukkit.command.TabCompleter
 
@@ -19,19 +21,18 @@ abstract class FocaCommand(name: String, allowConsole: Boolean) : TabCompleter
     @JvmOverloads
     fun sendUsage(source: CommandSource, usage: String, example: String? = null)
     {
-        Validate.notNull(source, "O CommandSource não pode ser nulo...")
-        Validate.notNull(usage, "A instrução não pode ser nulo...")
+        Validate.notNull(source, msg("error.internal.nullsource"))
 
-        source.sendMessage("&cUso correto do comando: $usage.")
+        source.sendMessage(msg("info.usage", usage))
 
         if (example != null)
-            source.sendMessage("&cExemplo: $example.")
+            source.sendMessage(msg("info.example", example))
     }
 
     override fun toString() = "FocaCommand: $name"
 
     init {
-        Validate.notNull(name, "O nome do comando não pode ser nulo!")
+        Validate.notNull(name, msg("error.internal.nullcommand"))
         this.name = name
         isAllowConsole = allowConsole
     }

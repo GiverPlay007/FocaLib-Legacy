@@ -1,5 +1,6 @@
 package me.giverplay.focalib.command
 
+import me.giverplay.focalib.utils.Messages
 import org.apache.commons.lang.Validate
 import org.bukkit.ChatColor
 import org.bukkit.command.CommandSender
@@ -24,7 +25,7 @@ class CommandSource(sender: CommandSender)
     fun hasAnyPermissions(vararg permissions: String?): Boolean = permissions.any { sender.hasPermission(it!!) }
 
     init {
-        Validate.notNull(sender, "Sender cannot be null!")
+        Validate.notNull(sender, Messages.msg("error.internal.nullsender"))
         this.sender = sender
     }
 }

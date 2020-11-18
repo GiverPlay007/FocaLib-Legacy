@@ -1,5 +1,7 @@
 package me.giverplay.focalib.command
 
+import me.giverplay.focalib.utils.Messages.Companion.msg
+
 import me.giverplay.focalib.FocaPlugin
 import org.apache.commons.lang.Validate
 import org.bukkit.command.Command
@@ -21,19 +23,19 @@ class CommandManager(plugin: FocaPlugin) : CommandExecutor
 
         if (!cmd.isEnabled)
         {
-            source.sendMessage("&cEste comando está desabilitado!")
+            source.sendMessage(msg("error.command-disabled"))
             return true
         }
 
         if(!sender.hasPermission(cmd.basePermission))
         {
-            source.sendMessage("&cSem permissão para executar este comando...")
+            source.sendMessage(msg("error.no-perm"))
             return true;
         }
 
         if(!cmd.isAllowConsole && !source.isPlayer)
         {
-            source.sendMessage("&cEste comando só poder ser executado por jogadores...")
+            source.sendMessage(msg("error.console"))
             return true;
         }
 
@@ -41,8 +43,8 @@ class CommandManager(plugin: FocaPlugin) : CommandExecutor
             cmd.execute(source, args)
         }
         catch (ex: Throwable) {
-            source.sendMessage("&cErro interno na execução do comando... Por favor, contate um administrador!")
-            plugin.logger.log(Level.WARNING, "O comando ${cmd.name} não foi executado corretamente", ex);
+            source.sendMessage(msg("error.unexpected"))
+            plugin.logger.log(Level.WARNING, msg("error.internal.unexpected", cmd.name), ex);
         }
 
         return true
@@ -50,33 +52,34 @@ class CommandManager(plugin: FocaPlugin) : CommandExecutor
 
     fun registerCommand(command: FocaCommand)
     {
-        Validate.notNull(command, "O comando não deve ser nulo!")
-        Validate.isTrue(!commands.containsKey(command.name), "Este comando já foi registrado!");
+        Validate.notNull(command, msg("error.internal.nullcommand"))
+        Validate.isTrue(!commands.containsKey(command.name), msg("error.internal"));
 
         val cmd = plugin.getCommand(command.name)
-            ?: throw IllegalStateException("O comando ${command.name} não foi registrado no plugin.yml!")
+            ?: throw IllegalStateException(msg("error.internal.cmdnotfound", command.name))
 
         cmd.setExecutor(this)
         cmd.tabCompleter = command
         commands[command.name] = command
+        plugin.logger.info(msg("debug.internal.cmdtoggle", msg("info.internal.reg")))
     }
 
     fun toggleCommand(command: FocaCommand, enabled: Boolean)
     {
-        Validate.notNull(command, "O comando não pode ser nulo!")
+        Validate.notNull(command, msg("error.internal.nullcommand"))
         command.isEnabled = enabled
-        val status = if (enabled) "habilitado" else "desabilitado"
-        plugin.logger.info("O comando ${command.name} foi $status")
+        val status = if (enabled) msg("info.internal.enabled") else msg("info.internal.disabled")
+        plugin.logger.info(msg("debug.internal.cmdtoggle", command.name, status))
     }
 
     fun unregisterCommand(command: FocaCommand)
     {
-        Validate.notNull(command, "O comando não pode ser nulo!");
+        Validate.notNull(command, msg("error.internal.nullcommand"));
 
         val cmd = plugin.getCommand(command.name) ?: return
         cmd.setExecutor(null)
         cmd.tabCompleter = null
         commands.remove(command.name)
-        plugin.logger.info("O comando ${command.name} foi desregistrado")
+        plugin.logger.info(msg("debug.internal.cmdtoggle", msg("info.internal.unreg")))
     }
 }

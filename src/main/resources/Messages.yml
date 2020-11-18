@@ -1,0 +1,31 @@
+error:
+  internal:
+    nullplayer: 'O jogador não deve ser nulo!'
+    regplayer: 'O jogador {0} já foi registrado!'
+    regcmd: 'O comando {0} já foi registrado'
+    regnotfound: 'Houve uma tentativa de desregistrar {0}, mas este não foi registrado!'
+    nullcommand: 'O comando não deve ser nulo'
+    unexpected: 'Erro inexperado ao executar o comando {0}'
+    nullsource: 'O CommandSource não deve ser nulo!'
+    nullsender: 'O CommandSender não deve ser nulo!'
+    cmdnotfound: 'O comando {0} não foi registrado no plugin.yml'
+
+  no-perm: '&cSem permissão!'
+  command-disabled: '&cEste comando está desabilitado'
+  console: '&cEste comando só pode ser executado por jogadores.'
+  unexpected: '&cErro interno inexperado, por favor, contate um admnistrador!'
+
+debug:
+  internal:
+    regplayer: 'O jogador {0} foi {1}'
+    cmdtoggle: 'O comando {0} foi {1}'
+
+info:
+  internal:
+    enabled: 'habilitado'
+    disabled: 'desabilitado'
+    reg: 'registrado'
+    unreg: 'resregistrado'
+
+  usage: '&cUso correto do comando: {0}.'
+  example: '&cExemplo: {0}.'

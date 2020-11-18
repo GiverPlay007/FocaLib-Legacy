@@ -1,6 +1,7 @@
 package me.giverplay.focalib.player
 
 import me.giverplay.focalib.FocaLib
+import me.giverplay.focalib.utils.Messages.Companion.msg
 import org.apache.commons.lang.Validate
 
 class PlayerManager(plugin: FocaLib)
@@ -10,24 +11,24 @@ class PlayerManager(plugin: FocaLib)
 
     fun registerPlayer(player: FocaPlayer)
     {
-        Validate.notNull(player, "O jogador a ser registrado não pode ser nulo!")
-        Validate.isTrue(!players.containsKey(player.name), "Esse jogador já foi registrado!")
+        Validate.notNull(player, msg("error.internal.nullplayer"))
+        Validate.isTrue(!players.containsKey(player.name), msg("error.internal.regplayer", player.name))
 
         synchronized(players)
         {
             players[player.name] = player
         }
 
-        plugin.logger.info("Jogador ${player.name} foi registrado!")
+        plugin.logger.info(msg("debug.internal.regplayer", player.name, msg("info.internal.reg")))
     }
 
     fun unregisterPlayer(player: FocaPlayer)
     {
-        Validate.notNull(player, "É impossível desregistrar um jogador nulo!")
+        Validate.notNull(player, msg("error.internal.nullplayer"))
 
         if(!players.containsKey(player.name))
         {
-            plugin.logger.info("Houve uma tentativa de desregistrar ${player.name}, mas esse não foi registrado!")
+            plugin.logger.info(msg("error.internal.regnotfound", player.name))
             return
         }
 
@@ -36,7 +37,7 @@ class PlayerManager(plugin: FocaLib)
             players.remove(player)
         }
 
-        plugin.logger.info("Jogador ${player.name} foi desregistrado!")
+        plugin.logger.info(msg("debug.internal.regplayer", player.name, msg("info.internal.unreg")))
     }
 
     fun getPlayer(name: String): FocaPlayer? = synchronized(players) { return players[name] }
