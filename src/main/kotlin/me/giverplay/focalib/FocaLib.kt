@@ -18,6 +18,9 @@ class FocaLib(plugin: FocaPlugin)
     val logger
       get() = plugin.logger
 
+    val dataFolder
+      get() = plugin.dataFolder
+
     fun enable()
     {
         if(Bukkit.getPluginManager().getPlugin("Vault") == null)

@@ -1,16 +1,33 @@
 package me.giverplay.focalib.chat.channel
 
-import br.com.devpaulo.legendchat.Legendchat
-import br.com.devpaulo.legendchat.LegendchatAPI
+import br.com.devpaulo.delays.DelayManager
+import br.com.devpaulo.events.ChatMessageEvent
+import br.com.devpaulo.ignore.IgnoreManager
+import br.com.devpaulo.legendchat.delays.DelayManager
 import br.com.devpaulo.legendchat.events.ChatMessageEvent
-import br.com.devpaulo.legendchat.listeners.Listeners
+import br.com.devpaulo.legendchat.ignore.IgnoreManager
+import br.com.devpaulo.legendchat.messages.MessageManager
+import br.com.devpaulo.legendchat.mutes.MuteManager
+import br.com.devpaulo.legendchat.privatemessages.PrivateMessageManager
+import br.com.devpaulo.listeners.Listeners
+import br.com.devpaulo.messages.MessageManager
+import br.com.devpaulo.mutes.MuteManager
+import br.com.devpaulo.privatemessages.PrivateMessageManager
 import me.giverplay.focalib.FocaLib
+import me.giverplay.focalib.player.PlayerManager
+import net.milkbowl.vault.chat.Chat
+import net.milkbowl.vault.economy.Economy
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.entity.Player
 import org.bukkit.event.player.AsyncPlayerChatEvent
+import org.bukkit.plugin.Plugin
 import java.io.File
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
+import kotlin.collections.HashSet
 
 class ChannelManager(private val plugin: FocaLib) {
     private val channels = HashMap<String, Channel>()
@@ -23,7 +40,7 @@ class ChannelManager(private val plugin: FocaLib) {
         if (existsChannel(c.name)) return
         channels[c.name.toLowerCase()] = c
         val channel =
-            File(LegendchatAPI.getPlugin().dataFolder, "channels" + File.separator + c.name.toLowerCase() + ".yml")
+            File(plugin.dataFolder, "channels" + File.separator + c.name.toLowerCase() + ".yml")
         if (!channel.exists()) {
             try {
                 channel.createNewFile()
@@ -33,7 +50,7 @@ class ChannelManager(private val plugin: FocaLib) {
             channel2["name"] = c.name
             channel2["nickname"] = c.nickname
             channel2["format"] = c.format
-            channel2["color"] = c.stringColor
+            channel2["color"] = c.color.name.toLowerCase()
             channel2["shortcutAllowed"] = c.isShortcutAllowed
             channel2["needFocus"] = c.isFocusNeeded
             channel2["distance"] = c.maxDistance
@@ -50,10 +67,10 @@ class ChannelManager(private val plugin: FocaLib) {
 
     fun deleteChannel(c: Channel) {
         if (!existsChannel(c.name)) return
-        for (p in c.getPlayersFocusedInChannel()) LegendchatAPI.getPlayerManager()
-            .setPlayerFocusedChannel(p, LegendchatAPI.getDefaultChannel(), false)
+        for (p in c.getPlayersFocusedInChannel()) plugin.getPlayerManager()
+            .setPlayerFocusedChannel(p, getDefaultChannel(), false)
         channels.remove(c.name.toLowerCase())
-        File(LegendchatAPI.getPlugin().dataFolder, "channels" + File.separator + c.name.toLowerCase() + ".yml").delete()
+        File(plugin.dataFolder, "channels" + File.separator + c.name.toLowerCase() + ".yml").delete()
     }
 
     fun getChannelByName(name: String): Channel? {
@@ -90,21 +107,21 @@ class ChannelManager(private val plugin: FocaLib) {
     }
 
     fun loadChannels() {
-        val bungee = LegendchatAPI.getPlugin().config.getString("bungeecord.channel")!!
+        val bungee = plugin.config.getString("bungeecord.channel")!!
         channels.clear()
-        for (channel in File(LegendchatAPI.getPlugin().dataFolder, "channels").listFiles()) {
+        for (channel in File(plugin.dataFolder, "channels").listFiles()) {
             if (channel.name.toLowerCase().endsWith(".yml")) {
                 if (channel.name.toLowerCase() != channel.name) channel.renameTo(
                     File(
-                        LegendchatAPI.getPlugin().dataFolder,
+                        plugin.dataFolder,
                         "channels" + File.separator + channel.name.toLowerCase()
                     )
                 )
                 loadChannel(channel, bungee)
             }
         }
-        for (p in Bukkit.getOnlinePlayers()) LegendchatAPI.getPlayerManager()
-            .setPlayerFocusedChannel(p, LegendchatAPI.getDefaultChannel(), false)
+        for (p in Bukkit.getOnlinePlayers()) getPlayerManager()
+            .setPlayerFocusedChannel(p, getDefaultChannel(), false)
     }
 
     private fun loadChannel(channel: File, bungee: String) {
@@ -127,28 +144,9 @@ class ChannelManager(private val plugin: FocaLib) {
         )
     }
 
-    fun translateStringColor(color: String): String {
-        return " " // TODO
-    }
-
-    fun realMessage(channel: Channel, sender: Player?, message: String?, bukkitFormat: String?, cancelled: Boolean) {
-        // TODO
-    }
-
-    fun otherMessage(channel: Channel, message: String?) {
-        // TODO
-    }
-
-    fun fakeMessage(channel: Channel, sender: Player?, message: String?) {
-        // TODO
-    }
-
-    fun translateChatColorToStringColor(c: ChatColor?): String {
-        return " " // TODO
-    }
 
     fun fakeMessage(c: Channel, sender: Player?, message: String?) {
-        if (!LegendchatAPI.sendFakeMessageToChat()) {
+        if (!sendFakeMessageToChat()) {
             c.sendMessage(sender, message, "", false)
             return
         }
@@ -159,7 +157,7 @@ class ChannelManager(private val plugin: FocaLib) {
             sender!!, "legendchat", p
         )
         Listeners.addFakeChat(event, false)
-        Bukkit.getScheduler().runTaskAsynchronously(LegendchatAPI.getPlugin(), Runnable {
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, Runnable {
             Bukkit.getPluginManager().callEvent(event)
             c.sendMessage(sender, message, event.format, Listeners.getFakeChat(event))
             Listeners.removeFakeChat(event)
@@ -167,52 +165,52 @@ class ChannelManager(private val plugin: FocaLib) {
     }
 
     fun realMessage(c: Channel, sender: Player, message: String?, bukkit_format: String, cancelled: Boolean) {
-        if (!sender.hasPermission("legendchat.channel." + c.name.toLowerCase() + ".chat") && !sender.hasPermission("legendchat.admin")) {
-            sender.sendMessage(LegendchatAPI.getMessageManager().getMessage("error2"))
+        if (!sender.hasPermission("channel." + c.name.toLowerCase() + ".chat") && !sender.hasPermission("admin")) {
+            sender.sendMessage(getMessageManager().getMessage("error2"))
             return
         }
-        if (sender.hasPermission("legendchat.channel." + c.name.toLowerCase() + ".blockwrite") && !sender.hasPermission(
-                "legendchat.admin"
+        if (sender.hasPermission("channel." + c.name.toLowerCase() + ".blockwrite") && !sender.hasPermission(
+                "admin"
             )
         ) {
-            sender.sendMessage(LegendchatAPI.getMessageManager().getMessage("error2"))
+            sender.sendMessage(getMessageManager().getMessage("error2"))
             return
         }
         if (c.isFocusNeeded) {
-            if (LegendchatAPI.getPlayerManager().getPlayerFocusedChannel(sender) !== c) {
-                sender.sendMessage(LegendchatAPI.getMessageManager().getMessage("error12"))
+            if (getPlayerManager().getPlayerFocusedChannel(sender) !== c) {
+                sender.sendMessage(getMessageManager().getMessage("error12"))
                 return
             }
         }
-        val delay = LegendchatAPI.getDelayManager().getPlayerDelayFromChannel(sender.name, c)
+        val delay = getDelayManager().getPlayerDelayFromChannel(sender.name, c)
         if (delay > 0) {
             sender.sendMessage(
-                LegendchatAPI.getMessageManager().getMessage("error11").replace("@time", Integer.toString(delay))
+                getMessageManager().getMessage("error11").replace("@time", Integer.toString(delay))
             )
             return
         }
-        if (LegendchatAPI.getMuteManager().isPlayerMuted(sender.name)) {
-            val time = LegendchatAPI.getMuteManager().getPlayerMuteTimeLeft(sender.name)
+        if (getMuteManager().isPlayerMuted(sender.name)) {
+            val time = getMuteManager().getPlayerMuteTimeLeft(sender.name)
             if (time == 0) {
-                sender.sendMessage(LegendchatAPI.getMessageManager().getMessage("mute_error4"))
+                sender.sendMessage(getMessageManager().getMessage("mute_error4"))
             } else {
                 sender.sendMessage(
-                    LegendchatAPI.getMessageManager().getMessage("mute_error5").replace("@time", Integer.toString(time))
+                    getMessageManager().getMessage("mute_error5").replace("@time", Integer.toString(time))
                 )
             }
             return
         }
-        if (LegendchatAPI.getMuteManager().isServerMuted) {
-            sender.sendMessage(LegendchatAPI.getMessageManager().getMessage("mute_error8"))
+        if (getMuteManager().isServerMuted) {
+            sender.sendMessage(getMessageManager().getMessage("mute_error8"))
             return
         }
-        if (LegendchatAPI.getIgnoreManager().hasPlayerIgnoredChannel(sender, c)) {
-            sender.sendMessage(LegendchatAPI.getMessageManager().getMessage("error14"))
+        if (getIgnoreManager().hasPlayerIgnoredChannel(sender, c)) {
+            sender.sendMessage(getMessageManager().getMessage("error14"))
             return
         }
         val recipients: MutableSet<Player> = HashSet()
         for (p in Bukkit.getOnlinePlayers()) {
-            if (p.hasPermission("legendchat.channel." + c.name.toLowerCase() + ".chat") || p.hasPermission("legendchat.admin")) {
+            if (p.hasPermission("channel." + c.name.toLowerCase() + ".chat") || p.hasPermission("admin")) {
                 recipients.add(p)
             }
         }
@@ -235,31 +233,31 @@ class ChannelManager(private val plugin: FocaLib) {
                     }
                 }
             }
-            if (LegendchatAPI.getIgnoreManager().hasPlayerIgnoredPlayer(p, sender.name)) {
+            if (getIgnoreManager().hasPlayerIgnoredPlayer(p, sender.name)) {
                 recipients.remove(p)
                 continue
             }
-            if (LegendchatAPI.getIgnoreManager().hasPlayerIgnoredChannel(p, c)) {
+            if (getIgnoreManager().hasPlayerIgnoredChannel(p, c)) {
                 recipients.remove(p)
                 continue
             }
             if (c.isFocusNeeded) {
-                if (LegendchatAPI.getPlayerManager().getPlayerFocusedChannel(p) !== c) {
+                if (getPlayerManager().getPlayerFocusedChannel(p) !== c) {
                     recipients.remove(p)
                 }
             }
         }
         var gastou = false
-        if (!Legendchat.block_econ && c.getMessageCost() > 0) {
-            if (!sender.hasPermission("legendchat.channel." + c.name.toLowerCase() + ".free") && !sender.hasPermission("legendchat.admin")) {
-                if (Legendchat.econ.getBalance(sender.name) < c.getMessageCost()) {
+        if (!block_econ && c.getMessageCost() > 0) {
+            if (!sender.hasPermission("channel." + c.name.toLowerCase() + ".free") && !sender.hasPermission("admin")) {
+                if (econ.getBalance(sender.name) < c.getMessageCost()) {
                     sender.sendMessage(
-                        LegendchatAPI.getMessageManager().getMessage("error3")
+                        getMessageManager().getMessage("error3")
                             .replace("@price", java.lang.Double.toString(c.getMessageCost()))
                     )
                     return
                 }
-                Legendchat.econ.withdrawPlayer(sender.name, c.getMessageCost())
+                econ.withdrawPlayer(sender.name, c.getMessageCost())
                 gastou = true
             }
         }
@@ -301,40 +299,40 @@ class ChannelManager(private val plugin: FocaLib) {
         tags["plainsender"] = sender.name
         tags["world"] = sender.world.name
         tags["bprefix"] =
-            if (LegendchatAPI.forceRemoveDoubleSpacesFromBukkit()) if (n_format_p_p == " ") "" else n_format_p_p.replace(
+            if (forceRemoveDoubleSpacesFromBukkit()) if (n_format_p_p == " ") "" else n_format_p_p.replace(
                 "  ",
                 " "
             ) else n_format_p_p
         tags["bprefix2"] =
-            if (LegendchatAPI.forceRemoveDoubleSpacesFromBukkit()) if (n_format_p == " ") "" else n_format_p.replace(
+            if (forceRemoveDoubleSpacesFromBukkit()) if (n_format_p == " ") "" else n_format_p.replace(
                 "  ",
                 " "
             ) else n_format_p
         tags["bsuffix"] =
-            if (LegendchatAPI.forceRemoveDoubleSpacesFromBukkit()) if (n_format_s == " ") "" else n_format_s.replace(
+            if (forceRemoveDoubleSpacesFromBukkit()) if (n_format_s == " ") "" else n_format_s.replace(
                 "  ",
                 " "
             ) else n_format_s
-        tags["server"] = LegendchatAPI.getMessageManager().getMessage("bungeecord_server")
+        tags["server"] = getMessageManager().getMessage("bungeecord_server")
         tags["time_hour"] = Integer.toString(Calendar.getInstance()[Calendar.HOUR_OF_DAY])
         tags["time_min"] = Integer.toString(Calendar.getInstance()[Calendar.MINUTE])
         tags["time_sec"] = Integer.toString(Calendar.getInstance()[Calendar.SECOND])
         tags["date_day"] = Integer.toString(Calendar.getInstance()[Calendar.DAY_OF_MONTH])
         tags["date_month"] = Integer.toString(Calendar.getInstance()[Calendar.MONTH])
         tags["date_year"] = Integer.toString(Calendar.getInstance()[Calendar.YEAR])
-        if (!Legendchat.block_chat) {
-            tags["prefix"] = tag(Legendchat.chat.getPlayerPrefix(sender))
-            tags["suffix"] = tag(Legendchat.chat.getPlayerSuffix(sender))
+        if (!block_chat) {
+            tags["prefix"] = tag(chat.getPlayerPrefix(sender))
+            tags["suffix"] = tag(chat.getPlayerSuffix(sender))
             tags["groupprefix"] =
-                tag(Legendchat.chat.getGroupPrefix(sender.world, Legendchat.chat.getPrimaryGroup(sender)))
+                tag(chat.getGroupPrefix(sender.world, chat.getPrimaryGroup(sender)))
             tags["groupsuffix"] =
-                tag(Legendchat.chat.getGroupSuffix(sender.world, Legendchat.chat.getPrimaryGroup(sender)))
-            for (g in Legendchat.chat.getPlayerGroups(sender)) {
-                tags[g.toLowerCase() + "prefix"] = tag(Legendchat.chat.getGroupPrefix(sender.world, g))
-                tags[g.toLowerCase() + "suffix"] = tag(Legendchat.chat.getGroupSuffix(sender.world, g))
+                tag(chat.getGroupSuffix(sender.world, chat.getPrimaryGroup(sender)))
+            for (g in chat.getPlayerGroups(sender)) {
+                tags[g.toLowerCase() + "prefix"] = tag(chat.getGroupPrefix(sender.world, g))
+                tags[g.toLowerCase() + "suffix"] = tag(chat.getGroupSuffix(sender.world, g))
             }
         }
-        val ttt = LegendchatAPI.textToTag()
+        val ttt = textToTag()
         if (ttt.size > 0) {
             val p = HashSet<Player>()
             p.add(sender)
@@ -354,7 +352,7 @@ class ChannelManager(private val plugin: FocaLib) {
             c,
             sender,
             message,
-            LegendchatAPI.format(c.format),
+            format(c.format),
             c.format,
             bukkit_format,
             recipients,
@@ -362,7 +360,7 @@ class ChannelManager(private val plugin: FocaLib) {
             cancelled
         )
         val effectiveGastou = gastou
-        Bukkit.getScheduler().runTask(LegendchatAPI.getPlugin(), Runnable {
+        Bukkit.getScheduler().runTask(plugin, Runnable {
             Bukkit.getPluginManager().callEvent(e)
             realMessage0(e, c, effectiveGastou)
         })
@@ -375,7 +373,7 @@ class ChannelManager(private val plugin: FocaLib) {
         val sender = e.sender
         val message = e.message
         var completa = e.format
-        if (LegendchatAPI.blockRepeatedTags()) {
+        if (blockRepeatedTags()) {
             if (e.tags.contains("prefix") && e.tags.contains("groupprefix")) {
                 if (e.getTagValue("prefix") == e.getTagValue("groupprefix")) {
                     e.setTagValue("prefix", "")
@@ -391,14 +389,14 @@ class ChannelManager(private val plugin: FocaLib) {
             completa.replace("{$n}", ChatColor.translateAlternateColorCodes('&', e.getTagValue(n)))
         completa = completa.replace("{msg}", translateAlternateChatColorsWithPermission(sender, message)!!)
         for (p in e.recipients) p.sendMessage(completa)
-        if (c.delayPerMessage > 0 && !sender.hasPermission("legendchat.channel." + c.name.toLowerCase() + ".nodelay") && !sender.hasPermission(
-                "legendchat.admin"
+        if (c.delayPerMessage > 0 && !sender.hasPermission("channel." + c.name.toLowerCase() + ".nodelay") && !sender.hasPermission(
+                "admin"
             )
         ) {
-            LegendchatAPI.getDelayManager().addPlayerDelay(sender.name, c)
+            getDelayManager().addPlayerDelay(sender.name, c)
         }
         if (c.maxDistance != 0.0) {
-            if (LegendchatAPI.showNoOneHearsYou()) {
+            if (showNoOneHearsYou()) {
                 var show = false
                 if (e.recipients.size == 0) {
                     show = true
@@ -406,7 +404,7 @@ class ChannelManager(private val plugin: FocaLib) {
                     show = true
                 } else {
                     show = true
-                    for (p in e.recipients) if (p !== sender && !LegendchatAPI.getPlayerManager()
+                    for (p in e.recipients) if (p !== sender && !getPlayerManager()
                             .isPlayerHiddenFromRecipients(p)
                     ) {
                         show = false
@@ -414,14 +412,14 @@ class ChannelManager(private val plugin: FocaLib) {
                     }
                 }
                 if (show) {
-                    sender.sendMessage(LegendchatAPI.getMessageManager().getMessage("special"))
+                    sender.sendMessage(getMessageManager().getMessage("special"))
                 }
             }
         }
-        for (p in LegendchatAPI.getPlayerManager().getOnlineSpys()) if (!e.recipients.contains(p)) {
+        for (p in getPlayerManager().getOnlineSpys()) if (!e.recipients.contains(p)) {
             p.sendMessage(
                 ChatColor.translateAlternateColorCodes(
-                    '&', LegendchatAPI.getFormat("spy").replace(
+                    '&', getFormat("spy").replace(
                         "{msg}",
                         ChatColor.stripColor(completa)!!
                     )
@@ -431,12 +429,12 @@ class ChannelManager(private val plugin: FocaLib) {
         if (gastou) {
             if (c.showCostMessage()) {
                 sender.sendMessage(
-                    LegendchatAPI.getMessageManager().getMessage("message9")
+                    getMessageManager().getMessage("message9")
                         .replace("@money", java.lang.Double.toString(c.costPerMessage))
                 )
             }
         }
-        if (LegendchatAPI.logToBukkit()) {
+        if (logToBukkit()) {
             Bukkit.getConsoleSender().sendMessage(completa)
         }
     }
@@ -444,31 +442,220 @@ class ChannelManager(private val plugin: FocaLib) {
     fun otherMessage(c: Channel, message: String?) {
         val recipients: MutableSet<Player> = HashSet()
         for (p in Bukkit.getOnlinePlayers()) {
-            if (p.hasPermission("legendchat.channel." + c.name.toLowerCase() + ".chat") || p.hasPermission("legendchat.admin")) {
+            if (p.hasPermission("channel." + c.name.toLowerCase() + ".chat") || p.hasPermission("admin")) {
                 recipients.add(p)
             }
         }
         val recipients2: MutableSet<Player> = HashSet()
         recipients2.addAll(recipients)
         for (p in recipients2) {
-            if (LegendchatAPI.getIgnoreManager().hasPlayerIgnoredChannel(p, c)) {
+            if (getIgnoreManager().hasPlayerIgnoredChannel(p, c)) {
                 recipients.remove(p)
                 continue
             }
             if (c.isFocusNeeded) {
-                if (LegendchatAPI.getPlayerManager().getPlayerFocusedChannel(p) !== c) {
+                if (getPlayerManager().getPlayerFocusedChannel(p) !== c) {
                     recipients.remove(p)
                 }
             }
         }
 
         for (p in recipients) p.sendMessage(message!!)
-        if (LegendchatAPI.logToBukkit()) {
+        if (logToBukkit()) {
             Bukkit.getConsoleSender().sendMessage(message!!)
         }
     }
 
     private fun tag(tag: String?): String {
         return tag ?: ""
+    }
+
+    private var logToBukkit = false
+    private var blockRepeatedTags = false
+    private var showNoOneHearsYou = false
+    private var forceRemoveDoubleSpacesFromBukkit = false
+    private var sendFakeMessageToChat = false
+    private var blockShortcutsWhenCancelled = false
+    private var maintainSpyMode = false
+    private var defaultChannel: Channel? = null
+    private val formats = HashMap<String, String>()
+    private val pm_formats = HashMap<String, String>()
+    private val text_to_tag = HashMap<String, String>()
+
+    private var cm: ChannelManager? = null
+    private var pm: PlayerManager? = null
+    private var mm: MessageManager? = null
+    private var im: IgnoreManager? = null
+    private var pmm: PrivateMessageManager? = null
+    private var dm: DelayManager? = null
+    private var mum: MuteManager? = null
+
+    fun getChannelManager(): ChannelManager? {
+        return cm
+    }
+
+    fun getPlayerManager(): PlayerManager? {
+        return pm
+    }
+
+    fun getMessageManager(): MessageManager? {
+        return mm
+    }
+
+    fun getIgnoreManager(): IgnoreManager? {
+        return im
+    }
+
+    fun getPrivateMessageManager(): PrivateMessageManager? {
+        return pmm
+    }
+
+    fun getDelayManager(): DelayManager? {
+        return dm
+    }
+
+    fun getMuteManager(): MuteManager? {
+        return mum
+    }
+
+    fun getDefaultChannel(): Channel? {
+        return defaultChannel
+    }
+
+    fun logToBukkit(): Boolean {
+        return logToBukkit
+    }
+
+    fun blockRepeatedTags(): Boolean {
+        return blockRepeatedTags
+    }
+
+    fun showNoOneHearsYou(): Boolean {
+        return showNoOneHearsYou
+    }
+
+    fun forceRemoveDoubleSpacesFromBukkit(): Boolean {
+        return forceRemoveDoubleSpacesFromBukkit
+    }
+
+    fun sendFakeMessageToChat(): Boolean {
+        return sendFakeMessageToChat
+    }
+
+    fun blockShortcutsWhenCancelled(): Boolean {
+        return blockShortcutsWhenCancelled
+    }
+
+    fun maintainSpyMode(): Boolean {
+        return maintainSpyMode
+    }
+
+    fun getPlugin(): Plugin? {
+        return plugin
+    }
+
+    fun format(msg: String): String? {
+        var msg = msg
+        for (f in formats.keys) msg = msg.replace("{$f}", formats[f]!!)
+        return msg
+    }
+
+    fun getFormat(base_format: String): String? {
+        return formats[base_format.toLowerCase()]
+    }
+
+    fun getPrivateMessageFormat(format: String): String? {
+        return pm_formats[format.toLowerCase()]
+    }
+
+    fun textToTag(): HashMap<String, String>? {
+        val h = HashMap<String, String>()
+        h.putAll(text_to_tag)
+        return h
+    }
+
+    fun load(all: Boolean) {
+        plugin = Bukkit.getPluginManager().getPlugin("Legendchat")
+        if (!all) {
+            cm = ChannelManager()
+            pm = PlayerManager()
+            mm = MessageManager()
+            im = IgnoreManager()
+            pmm = PrivateMessageManager()
+            dm = DelayManager()
+            mum = MuteManager()
+            return
+        }
+        val fc = Bukkit.getPluginManager().getPlugin("Legendchat")!!
+            .config
+        defaultChannel =
+            getChannelManager().getChannelByName(fc.getString("default_channel", "local")!!.toLowerCase())
+        logToBukkit = fc.getBoolean("log_to_bukkit", false)
+        blockRepeatedTags = fc.getBoolean("block_repeated_tags", true)
+        showNoOneHearsYou = fc.getBoolean("show_no_one_hears_you", true)
+        forceRemoveDoubleSpacesFromBukkit = fc.getBoolean("force_remove_double_spaces_from_bukkit", true)
+        sendFakeMessageToChat = fc.getBoolean("send_fake_message_to_chat", true)
+        blockShortcutsWhenCancelled = fc.getBoolean("block_shortcuts_when_cancelled", true)
+        maintainSpyMode = fc.getBoolean("maintain_spy_mode", false)
+        formats.clear()
+        pm_formats.clear()
+        for (f in fc.getConfigurationSection("format")!!.getKeys(false)) formats[f.toLowerCase()] =
+            fc.getString("format.$f")!!
+        for (f in fc.getConfigurationSection("private_message_format")!!.getKeys(false)) pm_formats[f.toLowerCase()] =
+            fc.getString("private_message_format.$f")!!
+        for (f in fc.getStringList("text_to_tag")) {
+            val s = f.split(";").toTypedArray()
+            text_to_tag[s[0].toLowerCase()] = s[1]
+        }
+        mm!!.loadMessages(File(plugin.getDataFolder(), "Lang.yml"))
+    }
+
+    var econ: Economy? = null
+    var chat: Chat? = null
+    var block_econ = false
+    var block_chat = false
+
+    fun onEnable() {
+        load(false)
+        val file: File = File(plugin.getDataFolder(), "config.yml")
+        if (!file.exists()) {
+            try {
+                plugin.saveResource("config_template.yml", false)
+                val file2: File = File(plugin.getDataFolder(), "config_template.yml")
+                file2.renameTo(File(plugin.getDataFolder(), "config.yml"))
+            } catch (ignored: Exception) {
+            }
+        }
+        try {
+            if (!File(getDataFolder(), "Lang.yml").exists()) {
+                plugin.saveResource("Lang.yml", false)
+                plugin.getLogger().info("Saved Lang.yml")
+            }
+        } catch (e: Exception) {
+        }
+        val channels: File = File(getDataFolder(), "channels")
+        if (!channels.exists()) {
+            getChannelManager()
+                .createPermanentChannel(Channel("global", "g", "{default}", "GRAY", true, false, 0, true, 0, 0, true))
+            getChannelManager().createPermanentChannel(
+                Channel(
+                    "local",
+                    "l",
+                    "{default}",
+                    "YELLOW",
+                    true,
+                    false,
+                    60,
+                    false,
+                    0,
+                    0,
+                    true
+                )
+            )
+        }
+        getChannelManager().loadChannels()
+        load(true)
+        for (p in Bukkit.getOnlinePlayers()) getPlayerManager()
+            .setPlayerFocusedChannel(p, getDefaultChannel(), false)
     }
 }
