@@ -14,6 +14,11 @@ repositories {
         url = 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/'
     }
 
+    maven {
+        name = 'jitpack.io'
+        url = 'https://jitpack.io/'
+    }
+
     flatDir {
         dirs 'libs'
     }
@@ -24,5 +29,6 @@ dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
 
     compileOnly 'org.spigotmc:spigot-api:1.16.4-R0.1-SNAPSHOT'
+    compileOnly 'com.github.MilkBowl:VaultAPI:1.7'
     compileOnly name: 'spigot-1.16.4'
 }

@@ -10,6 +10,9 @@ error:
     nullsender: 'O CommandSender não deve ser nulo!'
     cmdnotfound: 'O comando {0} não foi registrado no plugin.yml'
 
+  dependency:
+    vault: 'Vault não foi encontrado nos plugins'
+
   no-perm: '&cSem permissão!'
   command-disabled: '&cEste comando está desabilitado'
   console: '&cEste comando só pode ser executado por jogadores.'

@@ -2,9 +2,11 @@ package me.giverplay.focalib
 
 import me.giverplay.focalib.command.CommandManager
 import me.giverplay.focalib.player.PlayerManager
+import me.giverplay.focalib.utils.Messages
 import org.bukkit.Bukkit
 import org.bukkit.event.HandlerList
 import org.bukkit.event.Listener
+import org.bukkit.plugin.UnknownDependencyException
 
 class FocaLib(plugin: FocaPlugin)
 {
@@ -18,7 +20,10 @@ class FocaLib(plugin: FocaPlugin)
 
     fun enable()
     {
-
+        if(Bukkit.getPluginManager().getPlugin("Vault") == null)
+        {
+            throw UnknownDependencyException(Messages.msg("error.dependency.vault"))
+        }
     }
 
     fun disable()
