@@ -12,8 +12,8 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import br.com.devpaulo.legendchat.api.LegendchatAPI;
-import br.com.devpaulo.legendchat.channels.types.Channel;
+import br.com.devpaulo.legendchat.LegendchatAPI;
+import br.com.devpaulo.legendchat.channels.Channel;
 
 public class Listeners implements Listener {
     @EventHandler(priority = EventPriority.MONITOR)
@@ -80,7 +80,7 @@ public class Listeners implements Listener {
         }
     }
 
-    @EventHandler(ignoreCancelled = false, priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.MONITOR)
     private void onChat2(AsyncPlayerChatEvent e) {
         if (e.getMessage() != null && !chats.containsKey(e) && !e.isCancelled()) {
             if (LegendchatAPI.getPrivateMessageManager().isPlayerTellLocked(e.getPlayer())) {
@@ -99,7 +99,7 @@ public class Listeners implements Listener {
         e.setCancelled(true);
     }
 
-    @EventHandler(ignoreCancelled = false, priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.MONITOR)
     private void onChat(PlayerCommandPreprocessEvent e) {
         boolean block = false;
         if (LegendchatAPI.blockShortcutsWhenCancelled()) {

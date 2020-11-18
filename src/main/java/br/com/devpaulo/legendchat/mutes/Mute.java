@@ -3,7 +3,7 @@ package br.com.devpaulo.legendchat.mutes;
 import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitTask;
 
-import br.com.devpaulo.legendchat.api.LegendchatAPI;
+import br.com.devpaulo.legendchat.LegendchatAPI;
 
 public class Mute {
 	private String name = "";

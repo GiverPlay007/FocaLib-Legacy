@@ -8,8 +8,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import br.com.devpaulo.legendchat.api.LegendchatAPI;
-import br.com.devpaulo.legendchat.channels.types.Channel;
+import br.com.devpaulo.legendchat.LegendchatAPI;
+import br.com.devpaulo.legendchat.channels.Channel;
 
 public class PlayerManager
 {

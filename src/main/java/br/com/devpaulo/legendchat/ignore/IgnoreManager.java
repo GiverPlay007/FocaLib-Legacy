@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.bukkit.entity.Player;
 
-import br.com.devpaulo.legendchat.channels.types.Channel;
+import br.com.devpaulo.legendchat.channels.Channel;
 
 public class IgnoreManager {
 	private HashMap<Player,List<String>> ignoreList =  new HashMap<Player,List<String>>();

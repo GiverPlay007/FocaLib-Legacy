@@ -1,4 +1,4 @@
-package br.com.devpaulo.legendchat.api.events;
+package br.com.devpaulo.legendchat.events;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,8 +12,8 @@ import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
-import br.com.devpaulo.legendchat.api.LegendchatAPI;
-import br.com.devpaulo.legendchat.channels.types.Channel;
+import br.com.devpaulo.legendchat.LegendchatAPI;
+import br.com.devpaulo.legendchat.channels.Channel;
 
 public class ChatMessageEvent extends Event implements Cancellable {
 	private static final HandlerList handlers = new HandlerList();

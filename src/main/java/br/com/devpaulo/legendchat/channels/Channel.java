@@ -1,14 +1,13 @@
-package br.com.devpaulo.legendchat.channels.types;
+package br.com.devpaulo.legendchat.channels;
 
 import java.util.List;
 
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
-import br.com.devpaulo.legendchat.api.LegendchatAPI;
-import br.com.devpaulo.legendchat.channels.utils.ChannelUtils;
+import br.com.devpaulo.legendchat.LegendchatAPI;
 
-public class PermanentChannel implements Channel {
+public class Channel {
 	private String name;
 	private String nick;
 	private String format;
@@ -21,7 +20,7 @@ public class PermanentChannel implements Channel {
 	private double cost;
 	private boolean show_cost_msg;
 	private int delay;
-	public PermanentChannel(String name, String nick, String format, String color, boolean shortcut, boolean focus, double distance, boolean crossworlds, int delay, double cost,boolean show_cost_msg) {
+	public Channel(String name, String nick, String format, String color, boolean shortcut, boolean focus, double distance, boolean crossworlds, int delay, double cost, boolean show_cost_msg) {
 		this.name=name;
 		this.nick=nick;
 		this.format=format;

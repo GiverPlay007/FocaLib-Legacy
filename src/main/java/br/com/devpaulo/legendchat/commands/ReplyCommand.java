@@ -1,6 +1,6 @@
 package br.com.devpaulo.legendchat.commands;
 
-import br.com.devpaulo.legendchat.api.LegendchatAPI;
+import br.com.devpaulo.legendchat.LegendchatAPI;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;

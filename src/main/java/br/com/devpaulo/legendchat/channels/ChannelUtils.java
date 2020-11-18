@@ -1,8 +1,5 @@
-package br.com.devpaulo.legendchat.channels.utils;
+package br.com.devpaulo.legendchat.channels;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -10,15 +7,12 @@ import java.util.Set;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 import br.com.devpaulo.legendchat.Legendchat;
-import br.com.devpaulo.legendchat.api.LegendchatAPI;
-import br.com.devpaulo.legendchat.api.events.ChatMessageEvent;
-import br.com.devpaulo.legendchat.channels.types.BungeecordChannel;
-import br.com.devpaulo.legendchat.channels.types.Channel;
+import br.com.devpaulo.legendchat.LegendchatAPI;
+import br.com.devpaulo.legendchat.events.ChatMessageEvent;
 import br.com.devpaulo.legendchat.listeners.Listeners;
 
 @SuppressWarnings("deprecation")
@@ -278,11 +272,6 @@ public class ChannelUtils
     Player sender = e.getSender();
     String message = e.getMessage();
     
-    if (LegendchatAPI.isCensorActive())
-    {
-      message = LegendchatAPI.getCensorManager().censorFunction(message);
-    }
-    
     String completa = e.getFormat();
     
     if (LegendchatAPI.blockRepeatedTags())
@@ -363,35 +352,6 @@ public class ChannelUtils
     {
       Bukkit.getConsoleSender().sendMessage(completa);
     }
-  
-    if (LegendchatAPI.logToFile())
-    {
-      LegendchatAPI.getLogManager().addLogToCache(ChatColor.stripColor(ChatColor.translateAlternateColorCodes('&', completa)));
-    }
-  
-    if (c instanceof BungeecordChannel)
-    {
-      if (LegendchatAPI.isBungeecordActive())
-      {
-        if (LegendchatAPI.getBungeecordChannel()==((BungeecordChannel) c))
-        {
-          ByteArrayOutputStream b = new ByteArrayOutputStream();
-          DataOutputStream out = new DataOutputStream(b);
-          try
-          {
-            HashMap<String, String> tags_packet = new HashMap<String, String>();
-            for (String tag_packet : e.getTags())
-              tags_packet.put(tag_packet, e.getTagValue(tag_packet));
-            out.writeUTF(tags_packet.toString());
-            out.writeUTF(translateAlternateChatColorsWithPermission(sender, message));
-          } catch (IOException e1)
-          {
-            e1.printStackTrace();
-          }
-          sender.sendPluginMessage(Bukkit.getPluginManager().getPlugin("Legendchat"), "Legendchat", b.toByteArray());
-        }
-      }
-    }
   }
   
   public static void otherMessage(Channel c, String message)
@@ -440,11 +400,6 @@ public class ChannelUtils
     if (LegendchatAPI.logToBukkit())
     {
       Bukkit.getConsoleSender().sendMessage(message);
-    }
-
-    if (LegendchatAPI.logToFile())
-    {
-      LegendchatAPI.getLogManager().addLogToCache(ChatColor.stripColor(ChatColor.translateAlternateColorCodes('&', message)));
     }
   }
 
@@ -515,77 +470,6 @@ public class ChannelUtils
       default:
       {
         return ChatColor.WHITE.toString();
-      }
-    }
-  }
-
-  public static ChatColor translateStringColorToChatColor(String color)
-  {
-    switch (color.toLowerCase())
-    {
-      case "black":
-      {
-        return ChatColor.BLACK;
-      }
-      case "darkblue":
-      {
-        return ChatColor.DARK_BLUE;
-      }
-      case "darkgreen":
-      {
-        return ChatColor.DARK_GREEN;
-      }
-      case "darkaqua":
-      {
-        return ChatColor.DARK_AQUA;
-      }
-      case "darkred":
-      {
-        return ChatColor.DARK_RED;
-      }
-      case "darkpurple":
-      {
-        return ChatColor.DARK_PURPLE;
-      }
-      case "gold":
-      {
-        return ChatColor.GOLD;
-      }
-      case "gray":
-      {
-        return ChatColor.GRAY;
-      }
-      case "darkgray":
-      {
-        return ChatColor.DARK_GRAY;
-      }
-      case "blue":
-      {
-        return ChatColor.BLUE;
-      }
-      case "green":
-      {
-        return ChatColor.GREEN;
-      }
-      case "aqua":
-      {
-        return ChatColor.AQUA;
-      }
-      case "red":
-      {
-        return ChatColor.RED;
-      }
-      case "lightpurple":
-      {
-        return ChatColor.LIGHT_PURPLE;
-      }
-      case "yellow":
-      {
-        return ChatColor.YELLOW;
-      }
-      default:
-      {
-        return ChatColor.WHITE;
       }
     }
   }

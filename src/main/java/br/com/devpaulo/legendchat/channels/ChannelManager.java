@@ -1,8 +1,6 @@
 package br.com.devpaulo.legendchat.channels;
 
-import br.com.devpaulo.legendchat.api.LegendchatAPI;
-import br.com.devpaulo.legendchat.channels.types.Channel;
-import br.com.devpaulo.legendchat.channels.types.PermanentChannel;
+import br.com.devpaulo.legendchat.LegendchatAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -109,7 +107,7 @@ public class ChannelManager {
 	
 	private void loadChannel(File channel, String bungee) {
 		YamlConfiguration channel2 = YamlConfiguration.loadConfiguration(channel);
-		createPermanentChannel(new PermanentChannel(channel2.getString("name"),channel2.getString("nickname"),channel2.getString("format"),channel2.getString("color"),channel2.getBoolean("shortcutAllowed"),channel2.getBoolean("needFocus"),channel2.getDouble("distance"),channel2.getBoolean("crossworlds"),channel2.getInt("delayPerMessage"),channel2.getDouble("costPerMessage"),channel2.getBoolean("showCostMessage")));
+		createPermanentChannel(new Channel(channel2.getString("name"),channel2.getString("nickname"),channel2.getString("format"),channel2.getString("color"),channel2.getBoolean("shortcutAllowed"),channel2.getBoolean("needFocus"),channel2.getDouble("distance"),channel2.getBoolean("crossworlds"),channel2.getInt("delayPerMessage"),channel2.getDouble("costPerMessage"),channel2.getBoolean("showCostMessage")));
 	}
 	
 }
