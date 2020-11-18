@@ -12,6 +12,7 @@ error:
 
   dependency:
     vault: 'Vault não foi encontrado nos plugins'
+    setupchat: 'Falha ao configurar o Chat'
 
   no-perm: '&cSem permissão!'
   command-disabled: '&cEste comando está desabilitado'
