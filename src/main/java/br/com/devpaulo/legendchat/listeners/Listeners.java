@@ -13,7 +13,7 @@ import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import br.com.devpaulo.legendchat.LegendchatAPI;
-import br.com.devpaulo.legendchat.channels.Channel;
+import me.giverplay.focalib.chat.channel.Channel;
 
 public class Listeners implements Listener {
     @EventHandler(priority = EventPriority.MONITOR)

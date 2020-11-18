@@ -1,8 +1,8 @@
 package br.com.devpaulo.legendchat.commands;
 
 import br.com.devpaulo.legendchat.LegendchatAPI;
-import br.com.devpaulo.legendchat.channels.ChannelManager;
-import br.com.devpaulo.legendchat.channels.Channel;
+import me.giverplay.focalib.chat.channel.ChannelManager;
+import me.giverplay.focalib.chat.channel.Channel;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;

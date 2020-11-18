@@ -2,7 +2,7 @@ package br.com.devpaulo.legendchat.delays;
 
 import java.util.HashMap;
 
-import br.com.devpaulo.legendchat.channels.Channel;
+import me.giverplay.focalib.chat.channel.Channel;
 
 public class DelayManager {
 	private HashMap<String,Delay> delays = new HashMap<String,Delay>();

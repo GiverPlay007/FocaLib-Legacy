@@ -1,7 +1,7 @@
 package br.com.devpaulo.legendchat;
 
-import br.com.devpaulo.legendchat.channels.ChannelManager;
-import br.com.devpaulo.legendchat.channels.Channel;
+import me.giverplay.focalib.chat.channel.ChannelManager;
+import me.giverplay.focalib.chat.channel.Channel;
 import br.com.devpaulo.legendchat.delays.DelayManager;
 import br.com.devpaulo.legendchat.ignore.IgnoreManager;
 import br.com.devpaulo.legendchat.messages.MessageManager;

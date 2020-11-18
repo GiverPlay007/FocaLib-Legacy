@@ -1,6 +1,6 @@
 package br.com.devpaulo.legendchat;
 
-import br.com.devpaulo.legendchat.channels.Channel;
+import me.giverplay.focalib.chat.channel.Channel;
 import net.milkbowl.vault.chat.Chat;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.entity.Player;

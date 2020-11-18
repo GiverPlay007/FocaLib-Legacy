@@ -1,11 +1,11 @@
 package me.giverplay.focalib.player
 
-class PlayerSettings
-{
-    var scoreboardEnabled: Boolean = false
-    var tellEnabled: Boolean = false
-    var tpaEnabled: Boolean = false
-    var localChatEnabled: Boolean = false
-    var globalChatEnabled: Boolean = false
-    var vanished: Boolean = false
-}
+class PlayerSettings(
+    var scoreboardEnabled: Boolean,
+    var tellEnabled: Boolean,
+    var tpaEnabled: Boolean,
+    var localChatEnabled: Boolean,
+    var globalChatEnabled: Boolean,
+    var vanished: Boolean,
+    var spying: Boolean
+)

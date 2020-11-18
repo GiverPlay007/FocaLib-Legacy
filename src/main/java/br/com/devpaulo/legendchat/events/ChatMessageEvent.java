@@ -13,7 +13,7 @@ import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
 import br.com.devpaulo.legendchat.LegendchatAPI;
-import br.com.devpaulo.legendchat.channels.Channel;
+import me.giverplay.focalib.chat.channel.Channel;
 
 public class ChatMessageEvent extends Event implements Cancellable {
 	private static final HandlerList handlers = new HandlerList();
