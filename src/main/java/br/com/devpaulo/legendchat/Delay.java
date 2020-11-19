@@ -8,7 +8,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitTask;
 
 import br.com.devpaulo.legendchat.LegendchatAPI;
-import me.giverplay.focalib.chat.channel.Channel;
+import me.giverplay.focalib.chat.Channel;
 
 public class Delay {
     private String name;

@@ -1,9 +1,8 @@
 package me.giverplay.focalib.listeners
 
 import me.giverplay.focalib.FocaLib
-import me.giverplay.focalib.chat.ChatManager
-import me.giverplay.focalib.chat.channel.Channel
-import me.giverplay.focalib.chat.channel.ChannelManager
+import me.giverplay.focalib.chat.Channel
+import me.giverplay.focalib.chat.MessageManager
 import me.giverplay.focalib.player.FocaPlayer
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
@@ -14,14 +13,14 @@ import org.bukkit.event.player.PlayerJoinEvent
 
 class ListenerChat(
     private var plugin: FocaLib,
-    private var channelManager: ChannelManager
+    private var messageManager: MessageManager
 ): Listener
 {
     @EventHandler(priority = EventPriority.LOWEST)
     fun onJoin(event: PlayerJoinEvent)
     {
         val player: FocaPlayer? = plugin.playerManager.getPlayer(event.player.name)
-        player?.focusedChannel = channelManager.getDefaultChannel()
+        player?.focusedChannel = messageManager.getDefaultChannel()
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
@@ -32,13 +31,13 @@ class ListenerChat(
 
         if(player?.tellLocked != null)
         {
-            channelManager.performTell(player, event.message)
+            messageManager.performTell(player, player.tellLocked!!, event.message)
             return
         }
 
         if(player?.focusedChannel != null)
         {
-            channelManager.performMessage(player, event.message)
+            messageManager.performMessage(player, event.message)
             return
         }
 
@@ -49,7 +48,7 @@ class ListenerChat(
     private fun onChat(event: PlayerCommandPreprocessEvent)
     {
         val loweredMsg = event.message.toLowerCase()
-        val channel: Channel? = channelManager.checkChannel(loweredMsg) ?: return
+        val channel: Channel? = messageManager.checkChannel(loweredMsg) ?: return
 
         event.isCancelled = true
         val player: FocaPlayer? = plugin.playerManager.getPlayer(event.player.name)
@@ -61,7 +60,7 @@ class ListenerChat(
         }
 
         if (player != null) {
-            channelManager.performMessage(player, event.message)
+            messageManager.performMessage(player, event.message)
         }
     }
 }

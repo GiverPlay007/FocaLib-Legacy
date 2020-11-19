@@ -22,6 +22,7 @@ error:
   nullchannel: '&cCanal desconhecido!'
   notnullchannel: '&cEsse canal já existe!'
   nullplayer: '&cJogador desconhecido ou offline'
+  nullreply: '&cNinguém para responder'
 
 debug:
   internal:
@@ -43,3 +44,4 @@ info:
   created-channel: '&aCanal criado com sucesso!'
   changed-channel: '&aSeu canal foi alterado para &f{0}'
   changed-channel-other: '&aCanal de {0} foi alterador para &f{1}'
+  tell-locked: '&aTell travado com &f{0}.'

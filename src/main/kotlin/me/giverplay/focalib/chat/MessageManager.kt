@@ -1,4 +1,4 @@
-package me.giverplay.focalib.chat.channel
+package me.giverplay.focalib.chat
 
 import br.com.devpaulo.delays.DelayManager
 import br.com.devpaulo.events.ChatMessageEvent
@@ -30,7 +30,7 @@ import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 import kotlin.collections.HashSet
 
-class ChannelManager(private val plugin: FocaLib) {
+class MessageManager(private val plugin: FocaLib) {
     private val channels = HashMap<String, Channel>()
     fun createChannel(c: Channel) {
         if (existsChannel(c.name)) return
@@ -367,9 +367,14 @@ class ChannelManager(private val plugin: FocaLib) {
         })
     }
 
-    fun performTell(player: FocaPlayer, message: String)
+    fun performTell(player: FocaPlayer, other: FocaPlayer, message: Array<out String>)
     {
         // TODO
+    }
+
+    fun performTell(player: FocaPlayer, other: FocaPlayer, msg: String)
+    {
+        // todo
     }
 
     fun performMessage(player: FocaPlayer, message: String)
@@ -499,7 +504,7 @@ class ChannelManager(private val plugin: FocaLib) {
     private val pm_formats = HashMap<String, String>()
     private val text_to_tag = HashMap<String, String>()
 
-    private var cm: ChannelManager? = null
+    private var cm: MessageManager? = null
     private var pm: PlayerManager? = null
     private var mm: MessageManager? = null
     private var im: IgnoreManager? = null
@@ -507,7 +512,7 @@ class ChannelManager(private val plugin: FocaLib) {
     private var dm: DelayManager? = null
     private var mum: MuteManager? = null
 
-    fun getChannelManager(): ChannelManager? {
+    fun getChannelManager(): MessageManager? {
         return cm
     }
 
@@ -594,7 +599,7 @@ class ChannelManager(private val plugin: FocaLib) {
     fun load(all: Boolean) {
         plugin = Bukkit.getPluginManager().getPlugin("Legendchat")
         if (!all) {
-            cm = ChannelManager()
+            cm = MessageManager()
             pm = PlayerManager()
             mm = MessageManager()
             im = IgnoreManager()

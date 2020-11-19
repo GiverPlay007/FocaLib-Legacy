@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.bukkit.entity.Player;
 
-import me.giverplay.focalib.chat.channel.Channel;
+import me.giverplay.focalib.chat.Channel;
 
 public class IgnoreManager {
 	private HashMap<Player,List<String>> ignoreList =  new HashMap<Player,List<String>>();

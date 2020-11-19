@@ -1,9 +1,9 @@
-package me.giverplay.focalib.chat.channel
+package me.giverplay.focalib.chat
 
 import org.bukkit.ChatColor
 import org.bukkit.entity.Player
 
-class Channel(private val manager: ChannelManager,
+class Channel(private val manager: MessageManager,
               var name: String,
               var nickname: String,
               var format: String,

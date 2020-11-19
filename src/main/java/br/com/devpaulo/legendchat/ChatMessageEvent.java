@@ -6,14 +6,14 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import me.giverplay.focalib.chat.channel.ChannelManager;
+import me.giverplay.focalib.chat.MessageManager;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
-import me.giverplay.focalib.chat.channel.Channel;
+import me.giverplay.focalib.chat.Channel;
 
 public class ChatMessageEvent extends Event implements Cancellable {
 	private static final HandlerList handlers = new HandlerList();
@@ -108,7 +108,7 @@ public class ChatMessageEvent extends Event implements Cancellable {
 	}
 	
 	public String baseFormatToFormat(String base_format) {
-		return ChannelManager.format(base_format);
+		return MessageManager.format(base_format);
 	}
 	
 	public List<String> getTags() {

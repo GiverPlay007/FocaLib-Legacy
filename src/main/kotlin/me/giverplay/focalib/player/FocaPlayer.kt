@@ -1,6 +1,6 @@
 package me.giverplay.focalib.player
 
-import me.giverplay.focalib.chat.channel.Channel
+import me.giverplay.focalib.chat.Channel
 import me.giverplay.focalib.utils.Messages
 import org.bukkit.ChatColor
 import org.bukkit.craftbukkit.v1_16_R3.entity.CraftPlayer
@@ -22,6 +22,8 @@ class FocaPlayer(val player: Player)
     var focusedChannel: Channel? = null
 
     var tellLocked: FocaPlayer? = null
+
+    var lastTell: FocaPlayer? = null
 
     fun hasPermission(permission: String): Boolean = player.hasPermission(permission)
 

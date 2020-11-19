@@ -14,3 +14,9 @@ commands:
   channel:
     description: 'Alterar o canal de chat'
     aliases: [ch]
+  tell:
+    description: 'Mensagens privadas'
+    aliases: [msg, whisper, private]
+  reply:
+    description: 'Responder um jogador via mensagem privada'
+    aliases: [r]
