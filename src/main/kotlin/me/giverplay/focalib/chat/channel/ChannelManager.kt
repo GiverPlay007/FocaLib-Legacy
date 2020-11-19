@@ -3,12 +3,12 @@ package me.giverplay.focalib.chat.channel
 import br.com.devpaulo.delays.DelayManager
 import br.com.devpaulo.events.ChatMessageEvent
 import br.com.devpaulo.ignore.IgnoreManager
-import br.com.devpaulo.legendchat.delays.DelayManager
-import br.com.devpaulo.legendchat.events.ChatMessageEvent
-import br.com.devpaulo.legendchat.ignore.IgnoreManager
+import br.com.devpaulo.legendchat.DelayManager
+import br.com.devpaulo.legendchat.ChatMessageEvent
+import br.com.devpaulo.legendchat.IgnoreManager
 import br.com.devpaulo.legendchat.messages.MessageManager
-import br.com.devpaulo.legendchat.mutes.MuteManager
-import br.com.devpaulo.legendchat.privatemessages.PrivateMessageManager
+import br.com.devpaulo.legendchat.MuteManager
+import br.com.devpaulo.legendchat.PrivateMessageManager
 import br.com.devpaulo.listeners.Listeners
 import br.com.devpaulo.messages.MessageManager
 import br.com.devpaulo.mutes.MuteManager

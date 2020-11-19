@@ -23,12 +23,5 @@ class ColorUtils
 
             return str
         }
-
-        fun translateChatColorToStringColor(color: ChatColor?): String? = if (color != null && color.isColor)
-            color.name.toLowerCase()
-        else
-            ChatColor.WHITE.name.toLowerCase()
-
-        fun translateStringColor(color: String): ChatColor = ChatColor.valueOf(color)
     }
 }

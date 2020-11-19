@@ -1,5 +1,6 @@
 package me.giverplay.focalib.command
 
+import me.giverplay.focalib.FocaPlugin
 import me.giverplay.focalib.utils.Messages
 import org.apache.commons.lang.Validate
 import org.bukkit.ChatColor
@@ -15,6 +16,9 @@ class CommandSource(sender: CommandSender)
 
     val isPlayer
         get() = sender is Player
+
+    val asFocaPlayer
+        get() = FocaPlugin.lib?.playerManager?.getPlayer(sender.name)
 
     fun getPlayer(): Player ? = if (sender is Player) sender else null
 

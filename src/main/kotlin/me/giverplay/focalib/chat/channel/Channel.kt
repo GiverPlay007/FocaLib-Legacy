@@ -1,6 +1,5 @@
 package me.giverplay.focalib.chat.channel
 
-import me.giverplay.focalib.utils.ColorUtils
 import org.bukkit.ChatColor
 import org.bukkit.entity.Player
 
@@ -8,7 +7,7 @@ class Channel(private val manager: ChannelManager,
               var name: String,
               var nickname: String,
               var format: String,
-              color: String,
+              color: Char,
               var isShortcutAllowed: Boolean,
               var isFocusNeeded: Boolean,
               var maxDistance: Double,
@@ -18,10 +17,10 @@ class Channel(private val manager: ChannelManager,
               var showCostMessage: Boolean,
 ) {
 
-    var color: ChatColor = ColorUtils.translateStringColor(color)
+    var color: ChatColor? = ChatColor.getByChar(color)
 
-    fun setColor(c: String) {
-        color = ColorUtils.translateStringColor(c)
+    fun setColor(c: Char) {
+        color = ChatColor.getByChar(c)!!
     }
 
     fun sendMessage(message: String?) = manager.otherMessage(this, message)

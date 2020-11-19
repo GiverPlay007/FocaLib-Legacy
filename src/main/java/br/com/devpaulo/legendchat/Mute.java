@@ -1,4 +1,4 @@
-package br.com.devpaulo.legendchat.mutes;
+package br.com.devpaulo.legendchat;
 
 import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitTask;

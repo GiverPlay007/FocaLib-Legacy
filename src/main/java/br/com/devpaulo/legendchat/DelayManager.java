@@ -1,11 +1,11 @@
-package br.com.devpaulo.legendchat.delays;
+package br.com.devpaulo.legendchat;
 
 import java.util.HashMap;
 
 import me.giverplay.focalib.chat.channel.Channel;
 
 public class DelayManager {
-	private HashMap<String,Delay> delays = new HashMap<String,Delay>();
+	private HashMap<String, Delay> delays = new HashMap<String,Delay>();
 	public DelayManager() {
 	}
 	

@@ -5,3 +5,12 @@ version: 1.0.0
 main: me.giverplay.focalib.FocaPlugin
 softdepend:
   - Vault
+commands:
+  foca:
+    description: 'Comando principal'
+    aliases: [focalib, lib]
+  chat:
+    description: 'Gerenciar o chat'
+  channel:
+    description: 'Alterar o canal de chat'
+    aliases: [ch]

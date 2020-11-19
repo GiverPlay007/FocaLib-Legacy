@@ -1,9 +1,9 @@
-package br.com.devpaulo.legendchat.mutes;
+package br.com.devpaulo.legendchat;
 
 import java.util.HashMap;
 
 public class MuteManager {
-	private HashMap<String,Mute> mutes = new HashMap<String,Mute>();
+	private HashMap<String, Mute> mutes = new HashMap<String,Mute>();
 	private boolean muteall = false;
 	public MuteManager() {
 	}

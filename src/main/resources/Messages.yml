@@ -19,6 +19,9 @@ error:
   console: '&cEste comando só pode ser executado por jogadores.'
   unexpected: '&cErro interno inexperado, por favor, contate um admnistrador!'
   nochannel: '&cVocê não está em nenhum canal de chat!'
+  nullchannel: '&cCanal desconhecido!'
+  notnullchannel: '&cEsse canal já existe!'
+  nullplayer: '&cJogador desconhecido ou offline'
 
 debug:
   internal:
@@ -32,5 +35,11 @@ info:
     reg: 'registrado'
     unreg: 'resregistrado'
 
+  reload: '&aPlugin recarregado!'
+  legendchat: '&aChat baseado no plugin Legendchat!'
   usage: '&cUso correto do comando: {0}.'
   example: '&cExemplo: {0}.'
+  deleted-channel: '&cO canal {0} foi deletado!'
+  created-channel: '&aCanal criado com sucesso!'
+  changed-channel: '&aSeu canal foi alterado para &f{0}'
+  changed-channel-other: '&aCanal de {0} foi alterador para &f{1}'

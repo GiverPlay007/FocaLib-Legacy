@@ -1,4 +1,4 @@
-package br.com.devpaulo.legendchat.delays;
+package br.com.devpaulo.legendchat;
 
 import java.util.ArrayList;
 import java.util.HashMap;

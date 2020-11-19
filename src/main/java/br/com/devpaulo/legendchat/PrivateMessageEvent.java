@@ -1,4 +1,4 @@
-package br.com.devpaulo.legendchat.events;
+package br.com.devpaulo.legendchat;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.Cancellable;

@@ -5,7 +5,6 @@ import me.giverplay.focalib.player.PlayerManager
 import me.giverplay.focalib.utils.DependencyException
 import me.giverplay.focalib.utils.Messages
 import org.bukkit.Bukkit
-import org.bukkit.event.HandlerList
 import org.bukkit.event.Listener
 
 class FocaLib(plugin: FocaPlugin)
@@ -30,6 +29,11 @@ class FocaLib(plugin: FocaPlugin)
     }
 
     fun disable()
+    {
+
+    }
+
+    fun reload()
     {
 
     }

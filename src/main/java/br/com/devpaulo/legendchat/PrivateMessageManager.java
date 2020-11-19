@@ -1,4 +1,4 @@
-package br.com.devpaulo.legendchat.privatemessages;
+package br.com.devpaulo.legendchat;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,7 +10,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import br.com.devpaulo.legendchat.LegendchatAPI;
-import br.com.devpaulo.legendchat.events.PrivateMessageEvent;
 
 public class PrivateMessageManager {
     private HashMap<CommandSender, CommandSender> telling = new HashMap<CommandSender, CommandSender>();
