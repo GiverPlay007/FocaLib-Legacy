@@ -23,6 +23,8 @@ error:
   notnullchannel: '&cEsse canal já existe!'
   nullplayer: '&cJogador desconhecido ou offline'
   nullreply: '&cNinguém para responder'
+  channel-muted: '&cEsse canal já está mutado!'
+  channel-unmuted: '&cEsse canal já está desmutado!'
 
 debug:
   internal:
@@ -44,6 +46,8 @@ info:
   created-channel: '&aCanal criado com sucesso!'
   changed-channel: '&aSeu canal foi alterado para &f{0}'
   changed-channel-other: '&aCanal de {0} foi alterador para &f{1}'
+  muted-channel: '&aO canal {0} foi mutado!'
+  unmuted-channel: '&aO canal {0} foi desmutado!'
   tell-locked: '&aTell travado com &f{0}.'
   ignore: '&aAgora você está ignorando {0}.'
   unignore: '&aAgora você não está mais ignorando {0}.'

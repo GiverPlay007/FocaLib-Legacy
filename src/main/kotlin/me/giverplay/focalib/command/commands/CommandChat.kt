@@ -4,7 +4,6 @@ import me.giverplay.focalib.chat.Channel
 import me.giverplay.focalib.chat.MessageManager
 import me.giverplay.focalib.command.CommandSource
 import me.giverplay.focalib.command.FocaCommand
-import me.giverplay.focalib.player.FocaPlayer
 import me.giverplay.focalib.player.PlayerSettings
 import org.apache.commons.lang.WordUtils
 import org.bukkit.command.Command
@@ -47,6 +46,7 @@ class CommandChat(private val manager: MessageManager): FocaCommand("chat", fals
                             true,
                             0,
                             0.0,
+                            false,
                             false
                         )
                     )
@@ -80,6 +80,23 @@ class CommandChat(private val manager: MessageManager): FocaCommand("chat", fals
                 set.spying = true
                 sender.sendMessage(msg("info.spyon"))
             }
+
+            return
+        }
+
+        if(args[0].equals("mute", ignoreCase = true))
+        {
+            if(args.size < 2)
+                return sendUsage(sender, "/chat mute <channel>", "/chat mute global")
+
+            val channel: Channel? = manager.getChannelByName(args[1].toLowerCase())
+                ?: return sender.sendMessage(msg("error.nullchannel"))
+
+            if(channel?.muted!!)
+                return sender.sendMessage(msg("error.channel-muted"))
+
+            channel.muted = true
+            sender.sendMessage(msg("info.muted-channel", channel.name))
 
             return
         }

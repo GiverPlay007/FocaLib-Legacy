@@ -15,6 +15,7 @@ class Channel(private val manager: MessageManager,
               var delayPerMessage: Int,
               var costPerMessage: Double,
               var showCostMessage: Boolean,
+              var muted: Boolean
 ) {
 
     var color: ChatColor? = ChatColor.getByChar(color)
