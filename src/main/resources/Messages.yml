@@ -45,3 +45,6 @@ info:
   changed-channel: '&aSeu canal foi alterado para &f{0}'
   changed-channel-other: '&aCanal de {0} foi alterador para &f{1}'
   tell-locked: '&aTell travado com &f{0}.'
+  ignore: '&aAgora você está ignorando {0}.'
+  unignore: '&aAgora você não está mais ignorando {0}.'
+  ignored: '&c{0} te bloqueou!'

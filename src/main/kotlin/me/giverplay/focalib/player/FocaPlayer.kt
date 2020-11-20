@@ -19,6 +19,8 @@ class FocaPlayer(val player: Player)
     val ping
       get() = craftPlayer.handle.ping
 
+    val ignoring: ArrayList<String> = ArrayList()
+
     var focusedChannel: Channel? = null
 
     var tellLocked: FocaPlayer? = null

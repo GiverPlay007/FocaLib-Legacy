@@ -20,3 +20,6 @@ commands:
   reply:
     description: 'Responder um jogador via mensagem privada'
     aliases: [r]
+  ignore:
+    description: 'Ignorar um jogador no chat'
+    aliases: [blockplayer]
