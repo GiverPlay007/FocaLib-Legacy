@@ -100,6 +100,23 @@ class CommandChat(private val manager: MessageManager): FocaCommand("chat", fals
 
             return
         }
+
+        if(args[0].equals("unmute", ignoreCase = true))
+        {
+            if(args.size < 2)
+                return sendUsage(sender, "/chat unmute <channel>", "/chat unmute global")
+
+            val channel: Channel? = manager.getChannelByName(args[1].toLowerCase())
+                ?: return sender.sendMessage(msg("error.nullchannel"))
+
+            if(!channel?.muted!!)
+                return sender.sendMessage(msg("error.channel-unmuted"))
+
+            channel.muted = false
+            sender.sendMessage(msg("info.unmuted-channel", channel.name))
+
+            return
+        }
     }
 
     override fun onTabComplete(
