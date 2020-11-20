@@ -1,21 +1,7 @@
 package me.giverplay.focalib.chat
 
-import br.com.devpaulo.delays.DelayManager
-import br.com.devpaulo.events.ChatMessageEvent
-import br.com.devpaulo.ignore.IgnoreManager
-import br.com.devpaulo.legendchat.DelayManager
-import br.com.devpaulo.legendchat.ChatMessageEvent
-import br.com.devpaulo.legendchat.IgnoreManager
-import br.com.devpaulo.legendchat.messages.MessageManager
-import br.com.devpaulo.legendchat.MuteManager
-import br.com.devpaulo.legendchat.PrivateMessageManager
-import br.com.devpaulo.listeners.Listeners
-import br.com.devpaulo.messages.MessageManager
-import br.com.devpaulo.mutes.MuteManager
-import br.com.devpaulo.privatemessages.PrivateMessageManager
 import me.giverplay.focalib.FocaLib
 import me.giverplay.focalib.player.FocaPlayer
-import me.giverplay.focalib.player.PlayerManager
 import net.milkbowl.vault.chat.Chat
 import net.milkbowl.vault.economy.Economy
 import org.bukkit.Bukkit
@@ -23,15 +9,11 @@ import org.bukkit.ChatColor
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.entity.Player
 import org.bukkit.event.player.AsyncPlayerChatEvent
-import org.bukkit.plugin.Plugin
 import java.io.File
-import java.util.*
-import kotlin.collections.ArrayList
-import kotlin.collections.HashMap
-import kotlin.collections.HashSet
 
 class MessageManager(private val plugin: FocaLib) {
     private val channels = HashMap<String, Channel>()
+
     fun createChannel(c: Channel) {
         if (existsChannel(c.name)) return
         channels[c.name.toLowerCase()] = c
@@ -144,7 +126,6 @@ class MessageManager(private val plugin: FocaLib) {
             )
         )
     }
-
 
     fun fakeMessage(c: Channel, sender: Player?, message: String?) {
         if (!sendFakeMessageToChat()) {
@@ -367,34 +348,28 @@ class MessageManager(private val plugin: FocaLib) {
         })
     }
 
-    fun performTell(player: FocaPlayer, other: FocaPlayer, message: Array<out String>)
-    {
+    fun performTell(player: FocaPlayer, other: FocaPlayer, message: Array<out String>) {
         // TODO
     }
 
-    fun performTell(player: FocaPlayer, other: FocaPlayer, msg: String)
-    {
+    fun performTell(player: FocaPlayer, other: FocaPlayer, msg: String) {
         // todo
     }
 
-    fun performMessage(player: FocaPlayer, message: String)
-    {
+    fun performMessage(player: FocaPlayer, message: String) {
         // TODO
     }
 
-    fun checkChannel(string: String): Channel?
-    {
+    fun checkChannel(string: String): Channel? {
         // TODO
         return null
     }
 
-    fun muteAll()
-    {
+    fun muteAll() {
 
     }
 
-    fun unmuteAll()
-    {
+    fun unmuteAll() {
 
     }
 
@@ -514,42 +489,6 @@ class MessageManager(private val plugin: FocaLib) {
     private val pm_formats = HashMap<String, String>()
     private val text_to_tag = HashMap<String, String>()
 
-    private var cm: MessageManager? = null
-    private var pm: PlayerManager? = null
-    private var mm: MessageManager? = null
-    private var im: IgnoreManager? = null
-    private var pmm: PrivateMessageManager? = null
-    private var dm: DelayManager? = null
-    private var mum: MuteManager? = null
-
-    fun getChannelManager(): MessageManager? {
-        return cm
-    }
-
-    fun getPlayerManager(): PlayerManager? {
-        return pm
-    }
-
-    fun getMessageManager(): MessageManager? {
-        return mm
-    }
-
-    fun getIgnoreManager(): IgnoreManager? {
-        return im
-    }
-
-    fun getPrivateMessageManager(): PrivateMessageManager? {
-        return pmm
-    }
-
-    fun getDelayManager(): DelayManager? {
-        return dm
-    }
-
-    fun getMuteManager(): MuteManager? {
-        return mum
-    }
-
     fun getDefaultChannel(): Channel? {
         return defaultChannel
     }
@@ -582,10 +521,6 @@ class MessageManager(private val plugin: FocaLib) {
         return maintainSpyMode
     }
 
-    fun getPlugin(): Plugin? {
-        return plugin
-    }
-
     fun format(msg: String): String? {
         var msg = msg
         for (f in formats.keys) msg = msg.replace("{$f}", formats[f]!!)
@@ -608,16 +543,7 @@ class MessageManager(private val plugin: FocaLib) {
 
     fun load(all: Boolean) {
         plugin = Bukkit.getPluginManager().getPlugin("Legendchat")
-        if (!all) {
-            cm = MessageManager()
-            pm = PlayerManager()
-            mm = MessageManager()
-            im = IgnoreManager()
-            pmm = PrivateMessageManager()
-            dm = DelayManager()
-            mum = MuteManager()
-            return
-        }
+
         val fc = Bukkit.getPluginManager().getPlugin("Legendchat")!!
             .config
         defaultChannel =
