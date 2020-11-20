@@ -14,7 +14,7 @@ class CommandChat(private val manager: MessageManager): FocaCommand("chat", fals
     override fun execute(sender: CommandSource, args: Array<out String>)
     {
         if(args.isEmpty() || !sender.hasPermission("foca.chat.admin"))
-            sender.sendMessage(msg("info.legendchat"))
+            return sender.sendMessage(msg("info.legendchat"))
 
         if (args[0].equals("channel", ignoreCase = true))
         {
@@ -115,6 +115,20 @@ class CommandChat(private val manager: MessageManager): FocaCommand("chat", fals
             channel.muted = false
             sender.sendMessage(msg("info.unmuted-channel", channel.name))
 
+            return
+        }
+
+        if(args[0].equals("muteall", ignoreCase = true))
+        {
+            sender.sendMessage("info.muted-all")
+            manager.muteAll()
+            return
+        }
+
+        if(args[0].equals("unmuteall", ignoreCase = true))
+        {
+            sender.sendMessage("info.unmuted-all")
+            manager.unmuteAll()
             return
         }
     }

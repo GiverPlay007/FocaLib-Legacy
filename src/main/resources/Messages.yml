@@ -48,6 +48,8 @@ info:
   changed-channel-other: '&aCanal de {0} foi alterador para &f{1}'
   muted-channel: '&aO canal {0} foi mutado!'
   unmuted-channel: '&aO canal {0} foi desmutado!'
+  muted-all: '&aTodos os canais foram mutados!'
+  unmuted-all: '&aTodos os canais foram desmutados!'
   tell-locked: '&aTell travado com &f{0}.'
   ignore: '&aAgora você está ignorando {0}.'
   unignore: '&aAgora você não está mais ignorando {0}.'

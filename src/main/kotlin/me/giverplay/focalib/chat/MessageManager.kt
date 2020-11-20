@@ -388,6 +388,16 @@ class MessageManager(private val plugin: FocaLib) {
         return null
     }
 
+    fun muteAll()
+    {
+
+    }
+
+    fun unmuteAll()
+    {
+
+    }
+
     private fun realMessage0(e: ChatMessageEvent, c: Channel, gastou: Boolean) {
         if (e.isCancelled) {
             return
