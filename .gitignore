@@ -4,6 +4,7 @@ build/
 libs/
 
 *.iml
+*.jar
 
 gradle-app.setting
 !gradle-wrapper.jar
