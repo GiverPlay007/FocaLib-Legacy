@@ -48,3 +48,5 @@ info:
   ignore: '&aAgora você está ignorando {0}.'
   unignore: '&aAgora você não está mais ignorando {0}.'
   ignored: '&c{0} te bloqueou!'
+  spyon: '&aAgora você está no modo espião.'
+  spyoff: '&cModo espião foi desativado.'

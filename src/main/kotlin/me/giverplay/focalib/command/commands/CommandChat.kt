@@ -4,6 +4,8 @@ import me.giverplay.focalib.chat.Channel
 import me.giverplay.focalib.chat.MessageManager
 import me.giverplay.focalib.command.CommandSource
 import me.giverplay.focalib.command.FocaCommand
+import me.giverplay.focalib.player.FocaPlayer
+import me.giverplay.focalib.player.PlayerSettings
 import org.apache.commons.lang.WordUtils
 import org.bukkit.command.Command
 import org.bukkit.command.CommandSender
@@ -59,6 +61,24 @@ class CommandChat(private val manager: MessageManager): FocaCommand("chat", fals
                 }
 
                 else -> sendUsage(sender, "/chat channel <create/delete> <channel>")
+            }
+
+            return
+        }
+
+        if(args[0].equals("spy", ignoreCase = true))
+        {
+            val set: PlayerSettings? = sender.asFocaPlayer?.settings
+
+            if(set?.spying!!)
+            {
+                set.spying = false
+                sender.sendMessage(msg("info.spyoff"))
+            }
+            else
+            {
+                set.spying = true
+                sender.sendMessage(msg("info.spyon"))
             }
 
             return

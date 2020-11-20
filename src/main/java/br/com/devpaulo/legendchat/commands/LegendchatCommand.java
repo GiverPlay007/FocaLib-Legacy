@@ -11,49 +11,6 @@ public class LegendchatCommand implements CommandExecutor
   @Override
   public boolean onCommand(CommandSender sender, Command cmd, String l, String[] args)
   {
-    if (args[0].equalsIgnoreCase("spy"))
-    {
-      if (!sender.hasPermission("legendchat.admin.spy") && !sender.hasPermission("legendchat.admin"))
-      {
-        sender.sendMessage(LegendchatAPI.getMessageManager().getMessage("error6"));
-        return true;
-      }
-      if (sender==Bukkit.getConsoleSender())
-      {
-        return false;
-      }
-      Player player = (Player) sender;
-      boolean spy = LegendchatAPI.getPlayerManager().isSpy(player);
-      if (!spy)
-      {
-        LegendchatAPI.getPlayerManager().addSpy(player);
-        sender.sendMessage(LegendchatAPI.getMessageManager().getMessage("message5"));
-      }
-      else
-      {
-        LegendchatAPI.getPlayerManager().removeSpy(player);
-        sender.sendMessage(LegendchatAPI.getMessageManager().getMessage("message6"));
-      }
-      return true;
-    }
-
-    if (args[0].equalsIgnoreCase("hide"))
-    {
-      Player player = (Player) sender;
-      boolean hidden = LegendchatAPI.getPlayerManager().isPlayerHiddenFromRecipients(player);
-      if (!hidden)
-      {
-        LegendchatAPI.getPlayerManager().hidePlayerFromRecipients(player);
-        sender.sendMessage(LegendchatAPI.getMessageManager().getMessage("message7"));
-      }
-      else
-      {
-        LegendchatAPI.getPlayerManager().showPlayerToRecipients(player);
-        sender.sendMessage(LegendchatAPI.getMessageManager().getMessage("message8"));
-      }
-      return true;
-    }
-
     if (args[0].equalsIgnoreCase("mute"))
     {
       if (!sender.hasPermission("legendchat.admin.mute") && !sender.hasPermission("legendchat.admin"))
@@ -107,6 +64,7 @@ public class LegendchatCommand implements CommandExecutor
       }
       return true;
     }
+
     else if (args[0].equalsIgnoreCase("unmute"))
     {
       if (!sender.hasPermission("legendchat.admin.unmute") && !sender.hasPermission("legendchat.admin"))
