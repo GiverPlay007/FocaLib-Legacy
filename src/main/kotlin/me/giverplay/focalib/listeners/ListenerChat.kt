@@ -3,6 +3,7 @@ package me.giverplay.focalib.listeners
 import me.giverplay.focalib.FocaLib
 import me.giverplay.focalib.chat.Channel
 import me.giverplay.focalib.chat.ChannelManager
+import me.giverplay.focalib.chat.ChatManager
 import me.giverplay.focalib.player.FocaPlayer
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
@@ -13,7 +14,8 @@ import org.bukkit.event.player.PlayerJoinEvent
 
 class ListenerChat(
     private var plugin: FocaLib,
-    private var channelManager: ChannelManager
+    private val channelManager: ChannelManager,
+    private val chatManager: ChatManager
 ): Listener
 {
     @EventHandler(priority = EventPriority.LOWEST)
@@ -31,13 +33,13 @@ class ListenerChat(
 
         if(player?.tellLocked != null)
         {
-            channelManager.performTell(player, player.tellLocked!!, event.message)
+            chatManager.performTell(player, player.tellLocked!!, event.message)
             return
         }
 
         if(player?.focusedChannel != null)
         {
-            channelManager.performMessage(player, event.message)
+            chatManager.performMessage(player, event.message)
             return
         }
 
@@ -47,8 +49,7 @@ class ListenerChat(
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     private fun onChat(event: PlayerCommandPreprocessEvent)
     {
-        val loweredMsg = event.message.toLowerCase()
-        val channel: Channel? = channelManager.checkChannel(loweredMsg) ?: return
+        val channel: Channel? = channelManager.checkChannel(event.message.toLowerCase()) ?: return
 
         event.isCancelled = true
         val player: FocaPlayer? = plugin.playerManager.getPlayer(event.player.name)
@@ -60,7 +61,7 @@ class ListenerChat(
         }
 
         if (player != null) {
-            channelManager.performMessage(player, event.message)
+            chatManager.performMessage(player, event.message)
         }
     }
 }

@@ -1,13 +1,13 @@
 package me.giverplay.focalib.command.commands
 
-import me.giverplay.focalib.chat.ChannelManager
+import me.giverplay.focalib.chat.ChatManager
 import me.giverplay.focalib.command.CommandSource
 import me.giverplay.focalib.command.FocaCommand
 import me.giverplay.focalib.player.FocaPlayer
 import org.bukkit.command.Command
 import org.bukkit.command.CommandSender
 
-class CommandReply(private val manager: ChannelManager): FocaCommand("reply", false)
+class CommandReply(private val manager: ChatManager): FocaCommand("reply", false)
 {
     override fun execute(sender: CommandSource, args: Array<out String>)
     {

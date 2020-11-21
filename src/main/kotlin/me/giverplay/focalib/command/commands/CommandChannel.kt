@@ -18,7 +18,7 @@ class CommandChannel(private val manager: ChannelManager): FocaCommand("channel"
         if (args.isEmpty())
             return sendUsage(sender, "/ch <channel>", "/ch global")
 
-        val channel: Channel? = manager.getChannelByNameOrNickname(args[0])
+        val channel: Channel? = manager.getChannel(args[0])
             ?: return sender.sendMessage(msg("error.nullchannel"))
 
         val player: FocaPlayer?

@@ -3,7 +3,7 @@ package me.giverplay.focalib.chat
 import org.bukkit.ChatColor
 import org.bukkit.entity.Player
 
-class Channel(private val manager: ChannelManager,
+class Channel(private val manager: ChatManager,
               var name: String,
               var nickname: String,
               var format: String,
@@ -23,10 +23,6 @@ class Channel(private val manager: ChannelManager,
         color = ChatColor.getByChar(c)!!
     }
 
-    fun sendMessage(message: String?) = manager.otherMessage(this, message)
-
-    fun sendMessage(sender: Player?, message: String?) = manager.fakeMessage(this, sender, message)
-
     fun sendMessage(sender: Player?, message: String?, bukkit_format: String?, cancelled: Boolean) =
-        manager.realMessage(this, sender!!, message, bukkit_format!!, cancelled)
+        manager.sendMessage(this, sender!!, message, bukkit_format!!, cancelled)
 }

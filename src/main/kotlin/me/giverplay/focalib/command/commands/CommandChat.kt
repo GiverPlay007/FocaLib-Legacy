@@ -26,7 +26,7 @@ class CommandChat(private val manager: ChannelManager): FocaCommand("chat", fals
 
             when {
                 args[1].equals("create", ignoreCase = true) -> {
-                    val channel: Channel? = manager.getChannelByName(args[2].toLowerCase())
+                    val channel: Channel? = manager.getChannel(args[2].toLowerCase())
 
                     if (channel != null)
                         return sender.sendMessage(msg("error.notnullchannel"))
@@ -52,7 +52,7 @@ class CommandChat(private val manager: ChannelManager): FocaCommand("chat", fals
                 }
 
                 args[1].equals("delete", ignoreCase = true) -> {
-                    val channel: Channel = manager.getChannelByName(args[2].toLowerCase())
+                    val channel: Channel = manager.getChannel(args[2].toLowerCase())
                         ?: return sender.sendMessage(msg("error.nullchannel"))
 
                     sender.sendMessage(msg("info.deleted-channel", channel.name))
@@ -88,7 +88,7 @@ class CommandChat(private val manager: ChannelManager): FocaCommand("chat", fals
             if(args.size < 2)
                 return sendUsage(sender, "/chat mute <channel>", "/chat mute global")
 
-            val channel: Channel? = manager.getChannelByName(args[1].toLowerCase())
+            val channel: Channel? = manager.getChannel(args[1].toLowerCase())
                 ?: return sender.sendMessage(msg("error.nullchannel"))
 
             if(channel?.muted!!)
@@ -105,7 +105,7 @@ class CommandChat(private val manager: ChannelManager): FocaCommand("chat", fals
             if(args.size < 2)
                 return sendUsage(sender, "/chat unmute <channel>", "/chat unmute global")
 
-            val channel: Channel? = manager.getChannelByName(args[1].toLowerCase())
+            val channel: Channel? = manager.getChannel(args[1].toLowerCase())
                 ?: return sender.sendMessage(msg("error.nullchannel"))
 
             if(!channel?.muted!!)

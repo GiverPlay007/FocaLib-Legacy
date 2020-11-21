@@ -1,14 +1,14 @@
 package me.giverplay.focalib.command.commands
 
 import me.giverplay.focalib.FocaPlugin.Companion.lib
-import me.giverplay.focalib.chat.ChannelManager
+import me.giverplay.focalib.chat.ChatManager
 import me.giverplay.focalib.command.CommandSource
 import me.giverplay.focalib.command.FocaCommand
 import org.bukkit.Bukkit
 import org.bukkit.command.Command
 import org.bukkit.command.CommandSender
 
-class CommandTell(private val manager: ChannelManager): FocaCommand("tell", false)
+class CommandTell(private val manager: ChatManager): FocaCommand("tell", false)
 {
     override fun execute(sender: CommandSource, args: Array<out String>)
     {

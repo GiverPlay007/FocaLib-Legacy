@@ -44,7 +44,7 @@ class FocaPlayer(val player: Player)
 
     fun send(msg: String) = Messages.msg(msg)?.let { player.sendMessage(it) }
 
-    fun canSeeChannel(channel: Channel): Boolean =
+    fun canUseChannel(channel: Channel): Boolean =
         hasPermission("foca.chat.channel.${channel.name.toLowerCase()}")
 
     fun hasChatColorPermission(color: ChatColor): Boolean =
