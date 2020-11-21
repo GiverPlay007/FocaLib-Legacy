@@ -13,34 +13,36 @@ import org.bukkit.entity.Player
 import org.bukkit.event.player.AsyncPlayerChatEvent
 import java.io.File
 
-class MessageManager(private val plugin: FocaLib) {
+class MessageManager(private val plugin: FocaLib)
+{
     private val channels = HashMap<String, Channel>()
 
-    fun createPermanentChannel(c: Channel) {
-        if (existsChannel(c.name)) return
-        channels[c.name.toLowerCase()] = c
-        val channel =
-            File(plugin.dataFolder, "channels" + File.separator + c.name.toLowerCase() + ".yml")
-        if (!channel.exists()) {
+    fun createPermanentChannel(channel: Channel)
+    {
+        if (existsChannel(channel.name))
+            return
+
+        channels[channel.name.toLowerCase()] = channel
+
+        val file = File(plugin.dataFolder, "channels${File.separator}${channel.name.toLowerCase()}.yml")
+
+        if (!file.exists())
+        {
+            val channelConfig = YamlConfiguration()
+            channelConfig["name"] = channel.name
+            channelConfig["nickname"] = channel.nickname
+            channelConfig["format"] = channel.format
+            channelConfig["color"] = channel.color?.name?.toLowerCase()
+            channelConfig["shortcutAllowed"] = channel.isShortcutAllowed
+            channelConfig["distance"] = channel.maxDistance
+            channelConfig["crossworlds"] = channel.isCrossworlds
+            channelConfig["delayPerMessage"] = channel.delayPerMessage
+            channelConfig["costPerMessage"] = channel.costPerMessage
+            channelConfig["showCostMessage"] = channel.showCostMessage
+
             try {
-                channel.createNewFile()
-            } catch (e: Exception) {
-            }
-            val channel2 = YamlConfiguration.loadConfiguration(channel)
-            channel2["name"] = c.name
-            channel2["nickname"] = c.nickname
-            channel2["format"] = c.format
-            channel2["color"] = c.color.name.toLowerCase()
-            channel2["shortcutAllowed"] = c.isShortcutAllowed
-            channel2["distance"] = c.maxDistance
-            channel2["crossworlds"] = c.isCrossworlds
-            channel2["delayPerMessage"] = c.delayPerMessage
-            channel2["costPerMessage"] = c.costPerMessage
-            channel2["showCostMessage"] = c.showCostMessage
-            try {
-                channel2.save(channel)
-            } catch (e: Exception) {
-            }
+                channelConfig.save(file)
+            } catch (e: Exception) { }
         }
     }
 
