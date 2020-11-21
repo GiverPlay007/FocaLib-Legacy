@@ -67,42 +67,25 @@ class ChannelManager(private val plugin: FocaLib, private val chatManager: ChatM
         return c
     }
 
-    fun loadChannels() {
-        val bungee = plugin.config.getString("bungeecord.channel")!!
+    private fun loadChannels()
+    {
         channels.clear()
-        for (channel in File(plugin.dataFolder, "channels").listFiles()) {
-            if (channel.name.toLowerCase().endsWith(".yml")) {
-                if (channel.name.toLowerCase() != channel.name) channel.renameTo(
-                    File(
-                        plugin.dataFolder,
-                        "channels" + File.separator + channel.name.toLowerCase()
-                    )
-                )
-                loadChannel(channel, bungee)
+
+        for (channel in File(plugin.dataFolder, "channels").listFiles())
+        {
+            if (channel.name.toLowerCase().endsWith(".yml"))
+            {
+                if (channel.name.toLowerCase() != channel.name) channel.renameTo(File(plugin.dataFolder, "channels${File.separator}${channel.name.toLowerCase()}"))
+                loadChannel(channel)
             }
         }
-        for (p in Bukkit.getOnlinePlayers()) getPlayerManager()
-            .setPlayerFocusedChannel(p, getDefaultChannel(), false)
+
+        plugin.playerManager.getPlayers().forEach { e -> e.focusedChannel = getDefaultChannel() }
     }
 
-    private fun loadChannel(channel: File, bungee: String) {
+    private fun loadChannel(channel: File) {
         val channel2 = YamlConfiguration.loadConfiguration(channel)
-        createPermanentChannel(
-            Channel(
-                this,
-                channel2.getString("name")!!,
-                channel2.getString("nickname")!!,
-                channel2.getString("format")!!,
-                channel2.getString("color")!![0],
-                channel2.getBoolean("shortcutAllowed"),
-                channel2.getDouble("distance"),
-                channel2.getBoolean("crossworlds"),
-                channel2.getInt("delayPerMessage"),
-                channel2.getDouble("costPerMessage"),
-                channel2.getBoolean("showCostMessage"),
-                false
-            )
-        )
+        createPermanentChannel(Channel(chatManager, channel2.getString("name")!!, channel2.getString("nickname")!!, channel2.getString("format")!!, channel2.getString("color")!![0], channel2.getBoolean("shortcutAllowed"), channel2.getDouble("distance"), channel2.getBoolean("crossworlds"), channel2.getInt("delayPerMessage"), channel2.getDouble("costPerMessage"), channel2.getBoolean("showCostMessage"), false))
     }
 
     fun muteAll() = getChannels().forEach { c -> c.muted = true }
@@ -122,6 +105,25 @@ class ChannelManager(private val plugin: FocaLib, private val chatManager: ChatM
     fun getPrivateMessageFormat(format: String): String? = pm_formats[format.toLowerCase()]
 
     fun load() {
+        val file: File = File(plugin.dataFolder, "config.yml")
+        if (!file.exists()) {
+            try {
+                plugin.plugin.saveResource("config_template.yml", false)
+                val file2: File = File(plugin.dataFolder, "config_template.yml")
+                file2.renameTo(File(plugin.dataFolder, "config.yml"))
+            } catch (ignored: Exception) {
+            }
+        }
+
+        val channels: File = File(plugin.dataFolder, "channels")
+
+        if (!channels.exists()) {
+            createPermanentChannel(Channel(chatManager, "global", "g", "{default}", '7', true, 0.0, true, 0, 0.0, true, false))
+            createPermanentChannel(Channel(chatManager,  "local", "l", "{default}", 'e', true, 60.0, false, 0, 0.0, true, false))
+        }
+
+        loadChannels()
+
         val fc = Bukkit.getPluginManager().getPlugin("Legendchat")!!.config
         defaultChannel = getChannel(fc.getString("default_channel", "local")!!.toLowerCase())
         maintainSpyMode = fc.getBoolean("maintain_spy_mode", false)
@@ -131,26 +133,5 @@ class ChannelManager(private val plugin: FocaLib, private val chatManager: ChatM
             fc.getString("format.$f")!!
         for (f in fc.getConfigurationSection("private_message_format")!!.getKeys(false)) pm_formats[f.toLowerCase()] =
             fc.getString("private_message_format.$f")!!
-    }
-
-    fun onEnable() {
-        val file: File = File(plugin.getDataFolder(), "config.yml")
-        if (!file.exists()) {
-            try {
-                plugin.saveResource("config_template.yml", false)
-                val file2: File = File(plugin.getDataFolder(), "config_template.yml")
-                file2.renameTo(File(plugin.getDataFolder(), "config.yml"))
-            } catch (ignored: Exception) {
-            }
-        }
-
-        val channels: File = File(getDataFolder(), "channels")
-
-        if (!channels.exists()) {
-            createPermanentChannel(Channel(chatManager, "global", "g", "{default}", '7', true, 0.0, true, 0, 0.0, true, false))
-            createPermanentChannel(Channel(chatManager,  "local", "l", "{default}", 'e', true, 60.0, false, 0, 0.0, true, false))
-        }
-
-        loadChannels()
     }
 }

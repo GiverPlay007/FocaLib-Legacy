@@ -167,17 +167,7 @@ class ChatManager(private val plugin: FocaLib)
             }
         }
 
-        val e = ChatMessageEvent(
-            c,
-            sender,
-            message,
-            format(c.format),
-            c.format,
-            bukkit_format,
-            recipients,
-            tags,
-            cancelled
-        )
+        val e = ChatMessageEvent(c, sender, message, format(c.format), c.format, bukkit_format, recipients, tags, cancelled)
         val effectiveGastou = gastou
         Bukkit.getScheduler().runTask(plugin, Runnable {
             Bukkit.getPluginManager().callEvent(e)
