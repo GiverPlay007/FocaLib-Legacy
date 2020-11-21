@@ -1,6 +1,4 @@
 default_channel: local
-block_shortcuts_when_cancelled: true
-send_fake_message_to_chat: true
 maintain_spy_mode: false
 format:
   default: '{color}[{nick}] {groupprefix}{rank}{vip}{tag}{clantag}&f{sender}{color}: {msg}'

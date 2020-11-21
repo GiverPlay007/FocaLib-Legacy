@@ -1,15 +1,17 @@
 package me.giverplay.focalib.chat
 
 import me.giverplay.focalib.FocaLib
-import net.milkbowl.vault.chat.Chat
-import net.milkbowl.vault.economy.Economy
 import org.bukkit.Bukkit
 import org.bukkit.configuration.file.YamlConfiguration
 import java.io.File
 
-class ChannelManager(private val plugin: FocaLib)
+class ChannelManager(private val plugin: FocaLib, private val chatManager: ChatManager)
 {
     private val channels = HashMap<String, Channel>()
+    private var maintainSpyMode = false
+    private var defaultChannel: Channel? = null
+    private val formats = HashMap<String, String>()
+    private val pm_formats = HashMap<String, String>()
 
     fun createPermanentChannel(channel: Channel)
     {
@@ -52,9 +54,6 @@ class ChannelManager(private val plugin: FocaLib)
 
     fun checkChannel(string: String): Channel?
     {
-
-
-
         return null
     }
 
@@ -110,17 +109,6 @@ class ChannelManager(private val plugin: FocaLib)
 
     fun unmuteAll() = getChannels().forEach { c -> c.muted = false }
 
-    private fun tag(tag: String?): String = tag ?: ""
-
-    private var showNoOneHearsYou = false
-    private var sendFakeMessageToChat = false
-    private var blockShortcutsWhenCancelled = false
-    private var maintainSpyMode = false
-    private var defaultChannel: Channel? = null
-    private val formats = HashMap<String, String>()
-    private val pm_formats = HashMap<String, String>()
-    private val text_to_tag = HashMap<String, String>()
-
     fun getDefaultChannel(): Channel? = defaultChannel
 
     fun format(msg: String): String? {
@@ -133,18 +121,9 @@ class ChannelManager(private val plugin: FocaLib)
 
     fun getPrivateMessageFormat(format: String): String? = pm_formats[format.toLowerCase()]
 
-    fun textToTag(): HashMap<String, String>? {
-        val h = HashMap<String, String>()
-        h.putAll(text_to_tag)
-        return h
-    }
-
-    fun load(all: Boolean) {
+    fun load() {
         val fc = Bukkit.getPluginManager().getPlugin("Legendchat")!!.config
         defaultChannel = getChannel(fc.getString("default_channel", "local")!!.toLowerCase())
-        showNoOneHearsYou = fc.getBoolean("show_no_one_hears_you", true)
-        sendFakeMessageToChat = fc.getBoolean("send_fake_message_to_chat", true)
-        blockShortcutsWhenCancelled = fc.getBoolean("block_shortcuts_when_cancelled", true)
         maintainSpyMode = fc.getBoolean("maintain_spy_mode", false)
         formats.clear()
         pm_formats.clear()
@@ -152,16 +131,7 @@ class ChannelManager(private val plugin: FocaLib)
             fc.getString("format.$f")!!
         for (f in fc.getConfigurationSection("private_message_format")!!.getKeys(false)) pm_formats[f.toLowerCase()] =
             fc.getString("private_message_format.$f")!!
-        for (f in fc.getStringList("text_to_tag")) {
-            val s = f.split(";").toTypedArray()
-            text_to_tag[s[0].toLowerCase()] = s[1]
-        }
     }
-
-    var econ: Economy? = null
-    var chat: Chat? = null
-    var block_econ = false
-    var block_chat = false
 
     fun onEnable() {
         val file: File = File(plugin.getDataFolder(), "config.yml")
@@ -173,33 +143,14 @@ class ChannelManager(private val plugin: FocaLib)
             } catch (ignored: Exception) {
             }
         }
-        try {
-            if (!File(getDataFolder(), "Lang.yml").exists()) {
-                plugin.saveResource("Lang.yml", false)
-                plugin.getLogger().info("Saved Lang.yml")
-            }
-        } catch (e: Exception) {
-        }
+
         val channels: File = File(getDataFolder(), "channels")
+
         if (!channels.exists()) {
-            createPermanentChannel(Channel(this, "global", "g", "{default}", '7', true, 0.0, true, 0, 0.0, true, false))
-            createPermanentChannel(
-                Channel(
-                    this,
-                    "local",
-                    "l",
-                    "{default}",
-                    'e',
-                    true,
-                    60.0,
-                    false,
-                    0,
-                    0.0,
-                    true,
-                    false
-                )
-            )
+            createPermanentChannel(Channel(chatManager, "global", "g", "{default}", '7', true, 0.0, true, 0, 0.0, true, false))
+            createPermanentChannel(Channel(chatManager,  "local", "l", "{default}", 'e', true, 60.0, false, 0, 0.0, true, false))
         }
+
         loadChannels()
     }
 }

@@ -14,7 +14,7 @@ import org.bukkit.plugin.RegisteredServiceProvider
 
 class ChatManager(private val plugin: FocaLib)
 {
-    var channelManager: ChannelManager = ChannelManager(plugin)
+    var channelManager: ChannelManager = ChannelManager(plugin, this)
 
     private var chat: Chat? = null
 
@@ -166,22 +166,7 @@ class ChatManager(private val plugin: FocaLib)
                 tags[g.toLowerCase() + "suffix"] = tag(chat.getGroupSuffix(sender.world, g))
             }
         }
-        val ttt = textToTag()
-        if (ttt.size > 0) {
-            val p = HashSet<Player>()
-            p.add(sender)
-            var i = 1
-            for (n in ttt.keys) {
-                var tag = ""
-                tag = try {
-                    bukkit_format.split("°" + i + "º°").toTypedArray()[1].split("°" + (i + 1) + "º°").toTypedArray()[0]
-                } catch (e: Exception) {
-                    ""
-                }
-                tags[n] = tag
-                i++
-            }
-        }
+
         val e = ChatMessageEvent(
             c,
             sender,
@@ -199,6 +184,8 @@ class ChatManager(private val plugin: FocaLib)
             realMessage0(e, c, effectiveGastou)
         })
     }
+
+    private fun tag(tag: String?): String = tag ?: ""
 
     private fun realMessage0(e: ChatMessageEvent, c: Channel, gastou: Boolean) {
         if (e.isCancelled) {
