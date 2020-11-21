@@ -41,7 +41,6 @@ class CommandChat(private val manager: MessageManager): FocaCommand("chat", fals
                             "{default}",
                             '8',
                             true,
-                            false,
                             0.0,
                             true,
                             0,

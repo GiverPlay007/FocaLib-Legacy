@@ -2,6 +2,8 @@ package me.giverplay.focalib.chat
 
 import me.giverplay.focalib.FocaLib
 import me.giverplay.focalib.player.FocaPlayer
+import me.giverplay.focalib.utils.ColorUtils
+import me.giverplay.focalib.utils.Messages.Companion.msg
 import net.milkbowl.vault.chat.Chat
 import net.milkbowl.vault.economy.Economy
 import org.bukkit.Bukkit
@@ -13,11 +15,6 @@ import java.io.File
 
 class MessageManager(private val plugin: FocaLib) {
     private val channels = HashMap<String, Channel>()
-
-    fun createChannel(c: Channel) {
-        if (existsChannel(c.name)) return
-        channels[c.name.toLowerCase()] = c
-    }
 
     fun createPermanentChannel(c: Channel) {
         if (existsChannel(c.name)) return
@@ -35,7 +32,6 @@ class MessageManager(private val plugin: FocaLib) {
             channel2["format"] = c.format
             channel2["color"] = c.color.name.toLowerCase()
             channel2["shortcutAllowed"] = c.isShortcutAllowed
-            channel2["needFocus"] = c.isFocusNeeded
             channel2["distance"] = c.maxDistance
             channel2["crossworlds"] = c.isCrossworlds
             channel2["delayPerMessage"] = c.delayPerMessage
@@ -111,18 +107,18 @@ class MessageManager(private val plugin: FocaLib) {
         val channel2 = YamlConfiguration.loadConfiguration(channel)
         createPermanentChannel(
             Channel(
-                channel2.getString("name"),
+                this,
+                channel2.getString("name")!!,
                 channel2.getString("nickname")!!,
                 channel2.getString("format")!!,
-                channel2.getString("color")!!,
+                channel2.getString("color")!![0],
                 channel2.getBoolean("shortcutAllowed"),
-                channel2.getBoolean("needFocus"),
                 channel2.getDouble("distance"),
                 channel2.getBoolean("crossworlds"),
                 channel2.getInt("delayPerMessage"),
-                channel2.getDouble("costPerMessage")
-                    .toInt(),
-                channel2.getBoolean("showCostMessage")
+                channel2.getDouble("costPerMessage"),
+                channel2.getBoolean("showCostMessage"),
+                false
             )
         )
     }
@@ -138,58 +134,43 @@ class MessageManager(private val plugin: FocaLib) {
             true,
             sender!!, "legendchat", p
         )
-        Listeners.addFakeChat(event, false)
         Bukkit.getScheduler().runTaskAsynchronously(plugin, Runnable {
             Bukkit.getPluginManager().callEvent(event)
             c.sendMessage(sender, message, event.format, Listeners.getFakeChat(event))
-            Listeners.removeFakeChat(event)
         })
     }
 
     fun realMessage(c: Channel, sender: Player, message: String?, bukkit_format: String, cancelled: Boolean) {
         if (!sender.hasPermission("channel." + c.name.toLowerCase() + ".chat") && !sender.hasPermission("admin")) {
-            sender.sendMessage(getMessageManager().getMessage("error2"))
+            sender.sendMessage(msg("error2"))
             return
         }
         if (sender.hasPermission("channel." + c.name.toLowerCase() + ".blockwrite") && !sender.hasPermission(
                 "admin"
             )
         ) {
-            sender.sendMessage(getMessageManager().getMessage("error2"))
+            sender.sendMessage(msg("error2"))
             return
         }
         if (c.isFocusNeeded) {
             if (getPlayerManager().getPlayerFocusedChannel(sender) !== c) {
-                sender.sendMessage(getMessageManager().getMessage("error12"))
+                sender.sendMessage(msg("error12"))
                 return
             }
         }
         val delay = getDelayManager().getPlayerDelayFromChannel(sender.name, c)
         if (delay > 0) {
             sender.sendMessage(
-                getMessageManager().getMessage("error11").replace("@time", Integer.toString(delay))
+                msg("error11").replace("@time", Integer.toString(delay))
             )
             return
         }
-        if (getMuteManager().isPlayerMuted(sender.name)) {
-            val time = getMuteManager().getPlayerMuteTimeLeft(sender.name)
-            if (time == 0) {
-                sender.sendMessage(getMessageManager().getMessage("mute_error4"))
-            } else {
-                sender.sendMessage(
-                    getMessageManager().getMessage("mute_error5").replace("@time", Integer.toString(time))
-                )
-            }
-            return
-        }
+
         if (getMuteManager().isServerMuted) {
-            sender.sendMessage(getMessageManager().getMessage("mute_error8"))
+            sender.sendMessage(msg("mute_error8"))
             return
         }
-        if (getIgnoreManager().hasPlayerIgnoredChannel(sender, c)) {
-            sender.sendMessage(getMessageManager().getMessage("error14"))
-            return
-        }
+
         val recipients: MutableSet<Player> = HashSet()
         for (p in Bukkit.getOnlinePlayers()) {
             if (p.hasPermission("channel." + c.name.toLowerCase() + ".chat") || p.hasPermission("admin")) {
@@ -223,23 +204,18 @@ class MessageManager(private val plugin: FocaLib) {
                 recipients.remove(p)
                 continue
             }
-            if (c.isFocusNeeded) {
-                if (getPlayerManager().getPlayerFocusedChannel(p) !== c) {
-                    recipients.remove(p)
-                }
-            }
         }
         var gastou = false
-        if (!block_econ && c.getMessageCost() > 0) {
+        if (!block_econ && c.msgCost() > 0) {
             if (!sender.hasPermission("channel." + c.name.toLowerCase() + ".free") && !sender.hasPermission("admin")) {
-                if (econ.getBalance(sender.name) < c.getMessageCost()) {
+                if (econ.getBalance(sender.name) < c.msgCost()) {
                     sender.sendMessage(
-                        getMessageManager().getMessage("error3")
-                            .replace("@price", java.lang.Double.toString(c.getMessageCost()))
+                        msg("error3")
+                            .replace("@price", java.lang.Double.toString(c.msgCost()))
                     )
                     return
                 }
-                econ.withdrawPlayer(sender.name, c.getMessageCost())
+                econ.withdrawPlayer(sender.name, c.msgCost())
                 gastou = true
             }
         }
@@ -280,35 +256,15 @@ class MessageManager(private val plugin: FocaLib) {
         tags["sender"] = sender.displayName
         tags["plainsender"] = sender.name
         tags["world"] = sender.world.name
-        tags["bprefix"] =
-            if (forceRemoveDoubleSpacesFromBukkit()) if (n_format_p_p == " ") "" else n_format_p_p.replace(
-                "  ",
-                " "
-            ) else n_format_p_p
-        tags["bprefix2"] =
-            if (forceRemoveDoubleSpacesFromBukkit()) if (n_format_p == " ") "" else n_format_p.replace(
-                "  ",
-                " "
-            ) else n_format_p
-        tags["bsuffix"] =
-            if (forceRemoveDoubleSpacesFromBukkit()) if (n_format_s == " ") "" else n_format_s.replace(
-                "  ",
-                " "
-            ) else n_format_s
-        tags["server"] = getMessageManager().getMessage("bungeecord_server")
-        tags["time_hour"] = Integer.toString(Calendar.getInstance()[Calendar.HOUR_OF_DAY])
-        tags["time_min"] = Integer.toString(Calendar.getInstance()[Calendar.MINUTE])
-        tags["time_sec"] = Integer.toString(Calendar.getInstance()[Calendar.SECOND])
-        tags["date_day"] = Integer.toString(Calendar.getInstance()[Calendar.DAY_OF_MONTH])
-        tags["date_month"] = Integer.toString(Calendar.getInstance()[Calendar.MONTH])
-        tags["date_year"] = Integer.toString(Calendar.getInstance()[Calendar.YEAR])
+        tags["bprefix"] = if (n_format_p_p == " ") "" else n_format_p_p.replace("  "," ")
+        tags["bprefix2"] = if (n_format_p == " ") "" else n_format_p.replace("  "," ")
+        tags["bsuffix"] = if (n_format_s == " ") "" else n_format_s.replace("  "," " )
+
         if (!block_chat) {
             tags["prefix"] = tag(chat.getPlayerPrefix(sender))
             tags["suffix"] = tag(chat.getPlayerSuffix(sender))
-            tags["groupprefix"] =
-                tag(chat.getGroupPrefix(sender.world, chat.getPrimaryGroup(sender)))
-            tags["groupsuffix"] =
-                tag(chat.getGroupSuffix(sender.world, chat.getPrimaryGroup(sender)))
+            tags["groupprefix"] = tag(chat.getGroupPrefix(sender.world, chat.getPrimaryGroup(sender)))
+            tags["groupsuffix"] = tag(chat.getGroupSuffix(sender.world, chat.getPrimaryGroup(sender)))
             for (g in chat.getPlayerGroups(sender)) {
                 tags[g.toLowerCase() + "prefix"] = tag(chat.getGroupPrefix(sender.world, g))
                 tags[g.toLowerCase() + "suffix"] = tag(chat.getGroupSuffix(sender.world, g))
@@ -380,7 +336,6 @@ class MessageManager(private val plugin: FocaLib) {
         val sender = e.sender
         val message = e.message
         var completa = e.format
-        if (blockRepeatedTags()) {
             if (e.tags.contains("prefix") && e.tags.contains("groupprefix")) {
                 if (e.getTagValue("prefix") == e.getTagValue("groupprefix")) {
                     e.setTagValue("prefix", "")
@@ -391,10 +346,9 @@ class MessageManager(private val plugin: FocaLib) {
                     e.setTagValue("suffix", "")
                 }
             }
-        }
         for (n in e.tags) completa =
             completa.replace("{$n}", ChatColor.translateAlternateColorCodes('&', e.getTagValue(n)))
-        completa = completa.replace("{msg}", translateAlternateChatColorsWithPermission(sender, message)!!)
+        completa = completa.replace("{msg}", ColorUtils.translateAlternateChatColorsWithPermission(sender, message)!!)
         for (p in e.recipients) p.sendMessage(completa)
         if (c.delayPerMessage > 0 && !sender.hasPermission("channel." + c.name.toLowerCase() + ".nodelay") && !sender.hasPermission(
                 "admin"
@@ -419,31 +373,18 @@ class MessageManager(private val plugin: FocaLib) {
                     }
                 }
                 if (show) {
-                    sender.sendMessage(getMessageManager().getMessage("special"))
+                    sender.sendMessage(msg("special"))
                 }
             }
         }
         for (p in getPlayerManager().getOnlineSpys()) if (!e.recipients.contains(p)) {
-            p.sendMessage(
-                ChatColor.translateAlternateColorCodes(
-                    '&', getFormat("spy").replace(
-                        "{msg}",
-                        ChatColor.stripColor(completa)!!
-                    )
-                )
-            )
+            p.sendMessage(ChatColor.translateAlternateColorCodes('&', getFormat("spy")?.replace("{msg}", ChatColor.stripColor(completa)!!)))
         }
         if (gastou) {
-            if (c.showCostMessage()) {
-                sender.sendMessage(
-                    getMessageManager().getMessage("message9")
-                        .replace("@money", java.lang.Double.toString(c.costPerMessage))
-                )
-            }
+            if (c.showCostMessage())
+                sender.sendMessage(msg("message9").replace("@money", java.lang.Double.toString(c.costPerMessage)))
         }
-        if (logToBukkit()) {
-            Bukkit.getConsoleSender().sendMessage(completa)
-        }
+        Bukkit.getConsoleSender().sendMessage(completa)
     }
 
     fun otherMessage(c: Channel, message: String?) {
@@ -455,32 +396,14 @@ class MessageManager(private val plugin: FocaLib) {
         }
         val recipients2: MutableSet<Player> = HashSet()
         recipients2.addAll(recipients)
-        for (p in recipients2) {
-            if (getIgnoreManager().hasPlayerIgnoredChannel(p, c)) {
-                recipients.remove(p)
-                continue
-            }
-            if (c.isFocusNeeded) {
-                if (getPlayerManager().getPlayerFocusedChannel(p) !== c) {
-                    recipients.remove(p)
-                }
-            }
-        }
 
         for (p in recipients) p.sendMessage(message!!)
-        if (logToBukkit()) {
             Bukkit.getConsoleSender().sendMessage(message!!)
-        }
     }
 
-    private fun tag(tag: String?): String {
-        return tag ?: ""
-    }
+    private fun tag(tag: String?): String = tag ?: ""
 
-    private var logToBukkit = false
-    private var blockRepeatedTags = false
     private var showNoOneHearsYou = false
-    private var forceRemoveDoubleSpacesFromBukkit = false
     private var sendFakeMessageToChat = false
     private var blockShortcutsWhenCancelled = false
     private var maintainSpyMode = false
@@ -489,37 +412,13 @@ class MessageManager(private val plugin: FocaLib) {
     private val pm_formats = HashMap<String, String>()
     private val text_to_tag = HashMap<String, String>()
 
-    fun getDefaultChannel(): Channel? {
-        return defaultChannel
-    }
+    fun getDefaultChannel(): Channel? = defaultChannel
 
-    fun logToBukkit(): Boolean {
-        return logToBukkit
-    }
+    fun showNoOneHearsYou(): Boolean = showNoOneHearsYou
 
-    fun blockRepeatedTags(): Boolean {
-        return blockRepeatedTags
-    }
+    fun sendFakeMessageToChat(): Boolean = sendFakeMessageToChat
 
-    fun showNoOneHearsYou(): Boolean {
-        return showNoOneHearsYou
-    }
-
-    fun forceRemoveDoubleSpacesFromBukkit(): Boolean {
-        return forceRemoveDoubleSpacesFromBukkit
-    }
-
-    fun sendFakeMessageToChat(): Boolean {
-        return sendFakeMessageToChat
-    }
-
-    fun blockShortcutsWhenCancelled(): Boolean {
-        return blockShortcutsWhenCancelled
-    }
-
-    fun maintainSpyMode(): Boolean {
-        return maintainSpyMode
-    }
+    fun blockShortcutsWhenCancelled(): Boolean = blockShortcutsWhenCancelled
 
     fun format(msg: String): String? {
         var msg = msg
@@ -527,13 +426,9 @@ class MessageManager(private val plugin: FocaLib) {
         return msg
     }
 
-    fun getFormat(base_format: String): String? {
-        return formats[base_format.toLowerCase()]
-    }
+    fun getFormat(base_format: String): String? = formats[base_format.toLowerCase()]
 
-    fun getPrivateMessageFormat(format: String): String? {
-        return pm_formats[format.toLowerCase()]
-    }
+    fun getPrivateMessageFormat(format: String): String? = pm_formats[format.toLowerCase()]
 
     fun textToTag(): HashMap<String, String>? {
         val h = HashMap<String, String>()
@@ -542,16 +437,9 @@ class MessageManager(private val plugin: FocaLib) {
     }
 
     fun load(all: Boolean) {
-        plugin = Bukkit.getPluginManager().getPlugin("Legendchat")
-
-        val fc = Bukkit.getPluginManager().getPlugin("Legendchat")!!
-            .config
-        defaultChannel =
-            getChannelManager().getChannelByName(fc.getString("default_channel", "local")!!.toLowerCase())
-        logToBukkit = fc.getBoolean("log_to_bukkit", false)
-        blockRepeatedTags = fc.getBoolean("block_repeated_tags", true)
+        val fc = Bukkit.getPluginManager().getPlugin("Legendchat")!!.config
+        defaultChannel = getChannelByName(fc.getString("default_channel", "local")!!.toLowerCase())
         showNoOneHearsYou = fc.getBoolean("show_no_one_hears_you", true)
-        forceRemoveDoubleSpacesFromBukkit = fc.getBoolean("force_remove_double_spaces_from_bukkit", true)
         sendFakeMessageToChat = fc.getBoolean("send_fake_message_to_chat", true)
         blockShortcutsWhenCancelled = fc.getBoolean("block_shortcuts_when_cancelled", true)
         maintainSpyMode = fc.getBoolean("maintain_spy_mode", false)
@@ -565,7 +453,6 @@ class MessageManager(private val plugin: FocaLib) {
             val s = f.split(";").toTypedArray()
             text_to_tag[s[0].toLowerCase()] = s[1]
         }
-        mm!!.loadMessages(File(plugin.getDataFolder(), "Lang.yml"))
     }
 
     var econ: Economy? = null
@@ -593,27 +480,9 @@ class MessageManager(private val plugin: FocaLib) {
         }
         val channels: File = File(getDataFolder(), "channels")
         if (!channels.exists()) {
-            getChannelManager()
-                .createPermanentChannel(Channel("global", "g", "{default}", "GRAY", true, false, 0, true, 0, 0, true))
-            getChannelManager().createPermanentChannel(
-                Channel(
-                    "local",
-                    "l",
-                    "{default}",
-                    "YELLOW",
-                    true,
-                    false,
-                    60,
-                    false,
-                    0,
-                    0,
-                    true
-                )
-            )
+            createPermanentChannel(Channel(this, "global", "g", "{default}", '7', true, 0.0, true, 0, 0.0, true, false))
+            createPermanentChannel(Channel(this,"local","l","{default}",'e',true,60.0,false,0,0.0,true,false))
         }
-        getChannelManager().loadChannels()
-        load(true)
-        for (p in Bukkit.getOnlinePlayers()) getPlayerManager()
-            .setPlayerFocusedChannel(p, getDefaultChannel(), false)
+        loadChannels()
     }
 }
