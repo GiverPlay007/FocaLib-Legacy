@@ -1,7 +1,7 @@
 package me.giverplay.focalib.command.commands
 
 import me.giverplay.focalib.chat.Channel
-import me.giverplay.focalib.chat.MessageManager
+import me.giverplay.focalib.chat.ChannelManager
 import me.giverplay.focalib.command.CommandSource
 import me.giverplay.focalib.command.FocaCommand
 import me.giverplay.focalib.player.PlayerSettings
@@ -9,7 +9,7 @@ import org.apache.commons.lang.WordUtils
 import org.bukkit.command.Command
 import org.bukkit.command.CommandSender
 
-class CommandChat(private val manager: MessageManager): FocaCommand("chat", false)
+class CommandChat(private val manager: ChannelManager): FocaCommand("chat", false)
 {
     override fun execute(sender: CommandSource, args: Array<out String>)
     {

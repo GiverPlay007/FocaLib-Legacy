@@ -10,7 +10,7 @@ import org.bukkit.plugin.RegisteredServiceProvider
 
 class ChatManager(private val plugin: FocaLib)
 {
-    var messageManager: MessageManager = MessageManager(plugin)
+    var channelManager: ChannelManager = ChannelManager(plugin)
 
     private var chat: Chat? = null
 
@@ -18,7 +18,7 @@ class ChatManager(private val plugin: FocaLib)
         if (!setupChat())
             throw DependencyException(Messages.msg("error.dependency.setupchat"))
 
-        plugin.registerEvent(ListenerChat(plugin, messageManager))
+        plugin.registerEvent(ListenerChat(plugin, channelManager))
     }
 
     private fun setupChat(): Boolean {

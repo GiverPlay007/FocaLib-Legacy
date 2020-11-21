@@ -2,7 +2,7 @@ package me.giverplay.focalib.listeners
 
 import me.giverplay.focalib.FocaLib
 import me.giverplay.focalib.chat.Channel
-import me.giverplay.focalib.chat.MessageManager
+import me.giverplay.focalib.chat.ChannelManager
 import me.giverplay.focalib.player.FocaPlayer
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
@@ -13,14 +13,14 @@ import org.bukkit.event.player.PlayerJoinEvent
 
 class ListenerChat(
     private var plugin: FocaLib,
-    private var messageManager: MessageManager
+    private var channelManager: ChannelManager
 ): Listener
 {
     @EventHandler(priority = EventPriority.LOWEST)
     fun onJoin(event: PlayerJoinEvent)
     {
         val player: FocaPlayer? = plugin.playerManager.getPlayer(event.player.name)
-        player?.focusedChannel = messageManager.getDefaultChannel()
+        player?.focusedChannel = channelManager.getDefaultChannel()
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
@@ -31,13 +31,13 @@ class ListenerChat(
 
         if(player?.tellLocked != null)
         {
-            messageManager.performTell(player, player.tellLocked!!, event.message)
+            channelManager.performTell(player, player.tellLocked!!, event.message)
             return
         }
 
         if(player?.focusedChannel != null)
         {
-            messageManager.performMessage(player, event.message)
+            channelManager.performMessage(player, event.message)
             return
         }
 
@@ -48,7 +48,7 @@ class ListenerChat(
     private fun onChat(event: PlayerCommandPreprocessEvent)
     {
         val loweredMsg = event.message.toLowerCase()
-        val channel: Channel? = messageManager.checkChannel(loweredMsg) ?: return
+        val channel: Channel? = channelManager.checkChannel(loweredMsg) ?: return
 
         event.isCancelled = true
         val player: FocaPlayer? = plugin.playerManager.getPlayer(event.player.name)
@@ -60,7 +60,7 @@ class ListenerChat(
         }
 
         if (player != null) {
-            messageManager.performMessage(player, event.message)
+            channelManager.performMessage(player, event.message)
         }
     }
 }

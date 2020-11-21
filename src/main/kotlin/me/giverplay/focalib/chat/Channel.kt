@@ -3,7 +3,7 @@ package me.giverplay.focalib.chat
 import org.bukkit.ChatColor
 import org.bukkit.entity.Player
 
-class Channel(private val manager: MessageManager,
+class Channel(private val manager: ChannelManager,
               var name: String,
               var nickname: String,
               var format: String,

@@ -13,7 +13,7 @@ import org.bukkit.entity.Player
 import org.bukkit.event.player.AsyncPlayerChatEvent
 import java.io.File
 
-class MessageManager(private val plugin: FocaLib)
+class ChannelManager(private val plugin: FocaLib)
 {
     private val channels = HashMap<String, Channel>()
 

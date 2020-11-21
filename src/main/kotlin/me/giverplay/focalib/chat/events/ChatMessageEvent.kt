@@ -1,7 +1,7 @@
 package me.giverplay.focalib.chat.events
 
 import me.giverplay.focalib.chat.Channel
-import me.giverplay.focalib.chat.MessageManager
+import me.giverplay.focalib.chat.ChannelManager
 import org.bukkit.ChatColor
 import org.bukkit.entity.Player
 import org.bukkit.event.Cancellable
@@ -9,7 +9,7 @@ import org.bukkit.event.Event
 import org.bukkit.event.HandlerList
 
 class ChatMessageEvent(
-    manager: MessageManager,
+    manager: ChannelManager,
     ch: Channel,
     private var sender: Player,
     private var message: String,
@@ -26,7 +26,7 @@ class ChatMessageEvent(
     val bukkitFormat: String
     val baseFormat: String
     val channel: Channel
-    private val MANAGER: MessageManager
+    private val MANAGER: ChannelManager
     private var format: String
     private var cancelled: Boolean
 
