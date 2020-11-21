@@ -44,6 +44,15 @@ class PlayerManager(plugin: FocaLib)
 
     fun getPlayer(name: String): FocaPlayer? = synchronized(players) { return players[name] }
 
+    fun getPlayers(): ArrayList<FocaPlayer>
+    {
+        val list: ArrayList<FocaPlayer> = ArrayList()
+
+        synchronized(players) { list.addAll(players.values) }
+
+        return list
+    }
+
     init {
         plugin.registerEvent(ListenerPlayerManager(this))
     }

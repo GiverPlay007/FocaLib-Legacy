@@ -46,12 +46,14 @@ class MessageManager(private val plugin: FocaLib)
         }
     }
 
-    fun deleteChannel(c: Channel) {
-        if (!existsChannel(c.name)) return
-        for (p in c.getPlayersFocusedInChannel()) plugin.getPlayerManager()
-            .setPlayerFocusedChannel(p, getDefaultChannel(), false)
-        channels.remove(c.name.toLowerCase())
-        File(plugin.dataFolder, "channels" + File.separator + c.name.toLowerCase() + ".yml").delete()
+    fun deleteChannel(channel: Channel)
+    {
+        if (!existsChannel(channel.name))
+            return
+
+        plugin.playerManager.getPlayers().forEach { player -> player.focusedChannel = defaultChannel }
+        channels.remove(channel.name.toLowerCase())
+        File(plugin.dataFolder, "channels" + File.separator + channel.name.toLowerCase() + ".yml").delete()
     }
 
     fun getChannelByName(name: String): Channel? {
@@ -258,9 +260,9 @@ class MessageManager(private val plugin: FocaLib)
         tags["sender"] = sender.displayName
         tags["plainsender"] = sender.name
         tags["world"] = sender.world.name
-        tags["bprefix"] = if (n_format_p_p == " ") "" else n_format_p_p.replace("  "," ")
-        tags["bprefix2"] = if (n_format_p == " ") "" else n_format_p.replace("  "," ")
-        tags["bsuffix"] = if (n_format_s == " ") "" else n_format_s.replace("  "," " )
+        tags["bprefix"] = if (n_format_p_p == " ") "" else n_format_p_p.replace("  ", " ")
+        tags["bprefix2"] = if (n_format_p == " ") "" else n_format_p.replace("  ", " ")
+        tags["bsuffix"] = if (n_format_s == " ") "" else n_format_s.replace("  ", " ")
 
         if (!block_chat) {
             tags["prefix"] = tag(chat.getPlayerPrefix(sender))
@@ -380,7 +382,15 @@ class MessageManager(private val plugin: FocaLib)
             }
         }
         for (p in getPlayerManager().getOnlineSpys()) if (!e.recipients.contains(p)) {
-            p.sendMessage(ChatColor.translateAlternateColorCodes('&', getFormat("spy")?.replace("{msg}", ChatColor.stripColor(completa)!!)))
+            p.sendMessage(
+                ChatColor.translateAlternateColorCodes(
+                    '&', getFormat("spy")?.replace(
+                        "{msg}", ChatColor.stripColor(
+                            completa
+                        )!!
+                    )
+                )
+            )
         }
         if (gastou) {
             if (c.showCostMessage())
@@ -483,7 +493,22 @@ class MessageManager(private val plugin: FocaLib)
         val channels: File = File(getDataFolder(), "channels")
         if (!channels.exists()) {
             createPermanentChannel(Channel(this, "global", "g", "{default}", '7', true, 0.0, true, 0, 0.0, true, false))
-            createPermanentChannel(Channel(this,"local","l","{default}",'e',true,60.0,false,0,0.0,true,false))
+            createPermanentChannel(
+                Channel(
+                    this,
+                    "local",
+                    "l",
+                    "{default}",
+                    'e',
+                    true,
+                    60.0,
+                    false,
+                    0,
+                    0.0,
+                    true,
+                    false
+                )
+            )
         }
         loadChannels()
     }
