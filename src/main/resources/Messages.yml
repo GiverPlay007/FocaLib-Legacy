@@ -25,6 +25,7 @@ error:
   nullreply: '&cNinguém para responder'
   channel-muted: '&cEsse canal já está mutado!'
   channel-unmuted: '&cEsse canal já está desmutado!'
+  tell-locked: '&cJogador com o tell desabilitado!'
 
 debug:
   internal:
@@ -56,3 +57,5 @@ info:
   ignored: '&c{0} te bloqueou!'
   spyon: '&aAgora você está no modo espião.'
   spyoff: '&cModo espião foi desativado.'
+  tell-enabled: '&aTell habilitado.'
+  tell-disabled: '&cTell desabilitado.'

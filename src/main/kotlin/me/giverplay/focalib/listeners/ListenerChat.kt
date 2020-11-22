@@ -39,7 +39,7 @@ class ListenerChat(
 
         if(player?.focusedChannel != null)
         {
-            chatManager.performMessage(player, event.message)
+            chatManager.performMessage(player, event.message, false)
             return
         }
 
@@ -61,7 +61,7 @@ class ListenerChat(
         }
 
         if (player != null) {
-            chatManager.performMessage(player, event.message)
+            chatManager.performMessage(player, event.message, true)
         }
     }
 }

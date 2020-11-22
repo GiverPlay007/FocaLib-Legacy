@@ -1,6 +1,7 @@
 package me.giverplay.focalib
 
 import me.giverplay.focalib.command.CommandManager
+import me.giverplay.focalib.command.commands.CommandFoca
 import me.giverplay.focalib.player.PlayerManager
 import me.giverplay.focalib.utils.DependencyException
 import me.giverplay.focalib.utils.Messages
@@ -26,6 +27,8 @@ class FocaLib(plugin: FocaPlugin)
         {
             throw DependencyException(Messages.msg("error.dependency.vault"))
         }
+
+        commandManager.registerCommand(CommandFoca(this))
     }
 
     fun disable()

@@ -1,11 +1,14 @@
 package me.giverplay.focalib.chat
 
 import me.giverplay.focalib.FocaLib
+import me.giverplay.focalib.chat.events.PrivateMessageEvent
+import me.giverplay.focalib.command.commands.*
 import me.giverplay.focalib.listeners.ListenerChat
 import me.giverplay.focalib.player.FocaPlayer
 import me.giverplay.focalib.utils.ColorUtils
 import me.giverplay.focalib.utils.DependencyException
 import me.giverplay.focalib.utils.Messages
+import me.giverplay.focalib.utils.Messages.Companion.msg
 import net.milkbowl.vault.chat.Chat
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
@@ -14,7 +17,7 @@ import org.bukkit.plugin.RegisteredServiceProvider
 
 class ChatManager(private val plugin: FocaLib)
 {
-    var channelManager: ChannelManager = ChannelManager(plugin, this)
+    private var channelManager: ChannelManager = ChannelManager(plugin, this)
 
     private var chat: Chat? = null
 
@@ -22,7 +25,15 @@ class ChatManager(private val plugin: FocaLib)
         if (!setupChat())
             throw DependencyException(Messages.msg("error.dependency.setupchat"))
 
-        plugin.registerEvent(ListenerChat(plugin, channelManager))
+        channelManager.load()
+        plugin.commandManager.registerCommands(
+            CommandChat(channelManager),
+            CommandChannel(channelManager),
+            CommandTell(this),
+            CommandReply(this),
+            CommandIgnore()
+        )
+        plugin.registerEvent(ListenerChat(plugin, channelManager, this))
     }
 
     private fun setupChat(): Boolean {
@@ -243,15 +254,64 @@ class ChatManager(private val plugin: FocaLib)
         Bukkit.getConsoleSender().sendMessage(completa)
     }
 
-    fun performTell(player: FocaPlayer, other: FocaPlayer, message: Array<out String>) {
-        // TODO
+    fun performTell(player: FocaPlayer, other: FocaPlayer, message: Array<out String>)
+    {
+        val sb: StringBuilder = StringBuilder()
+
+        for(s: String in message)
+        {
+            sb.append(s).append(" ")
+        }
+
+        performTell(player, other, sb.toString().trim())
     }
 
-    fun performTell(player: FocaPlayer, other: FocaPlayer, msg: String) {
-        // todo
+    fun performTell(player: FocaPlayer, other: FocaPlayer, message: String)
+    {
+        if(!other.settings.tellEnabled)
+            return player.sendRaw(msg("error.tell-locked")!!)
+
+        if(player.ignoring.contains(other.name))
+        {
+            player.ignoring.remove(other.name)
+            player.sendRaw(msg("info.unignore", other.name)!!)
+        }
+
+        if(other.ignoring.contains(player.name))
+            return player.sendRaw(msg("error.ignored", other.name)!!)
+
+        if(!player.settings.tellEnabled)
+        {
+            player.settings.tellEnabled = true
+            player.sendRaw(msg("info.tell-enabled")!!)
+        }
+
+        val event = PrivateMessageEvent(player, other, message)
+        Bukkit.getPluginManager().callEvent(event)
+
+        if(event.isCancelled)
+            return
+
+        val sender: FocaPlayer = event.getSender()
+        val receiver: FocaPlayer = event.getReceiver()
+        val msg: String = event.getMessage()
+        val sendFormat: String = ChatColor.translateAlternateColorCodes('&', channelManager.getPrivateMessageFormat("send")!!)
+        val receiveFormat: String = ChatColor.translateAlternateColorCodes('&', channelManager.getPrivateMessageFormat("receive")!!)
+        val spyFormat: String = ChatColor.translateAlternateColorCodes('&', channelManager.getPrivateMessageFormat("spy")!!)
+
+        sender.sendRaw(sendFormat.replace("{receiver}", receiver.name).replace("{msg}", msg))
+        receiver.sendRaw(receiveFormat.replace("{sender}", sender.name).replace("{msg}", msg))
+
+        plugin.playerManager.getPlayers().forEach { p ->
+            if (p.settings.spying && p != sender && p != other)
+                p.sendRaw(spyFormat.replace("{sender}", sender.name).replace("{receiver}", receiver.name).replace("{msg}", msg))
+        }
+
+        receiver.lastTell = sender
+        Bukkit.getConsoleSender().sendMessage(spyFormat.replace("{sender}", sender.name).replace("{receiver}", receiver.name).replace("{msg}", msg))
     }
 
-    fun performMessage(player: FocaPlayer, message: String) {
+    fun performMessage(player: FocaPlayer, message: String, shotcut: Boolean) {
         // TODO
     }
 }

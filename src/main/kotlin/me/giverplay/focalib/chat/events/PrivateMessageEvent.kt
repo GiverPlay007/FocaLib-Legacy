@@ -1,28 +1,28 @@
 package me.giverplay.focalib.chat.events
 
-import org.bukkit.command.CommandSender
+import me.giverplay.focalib.player.FocaPlayer
 import org.bukkit.event.Cancellable
 import org.bukkit.event.Event
 import org.bukkit.event.HandlerList
 
 class PrivateMessageEvent(
-    private var sender: CommandSender,
-    private var receiver: CommandSender,
+    private var sender: FocaPlayer,
+    private var receiver: FocaPlayer,
     private var message: String
 ) :
     Event(), Cancellable {
 
     private var cancelled = false
 
-    fun getSender(): CommandSender = sender
+    fun getSender(): FocaPlayer = sender
 
-    fun setSender(sender: CommandSender?) {
+    fun setSender(sender: FocaPlayer?) {
         if (sender != null) this.sender = sender
     }
 
-    fun getReceiver(): CommandSender = receiver
+    fun getReceiver(): FocaPlayer = receiver
 
-    fun setReceiver(receiver: CommandSender?) {
+    fun setReceiver(receiver: FocaPlayer?) {
         if (receiver != null) this.receiver = receiver
     }
 

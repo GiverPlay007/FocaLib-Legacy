@@ -64,6 +64,8 @@ class CommandManager(plugin: FocaPlugin) : CommandExecutor
         plugin.logger.info(msg("debug.internal.cmdtoggle", msg("info.internal.reg")))
     }
 
+    fun registerCommands(vararg cmds: FocaCommand) = cmds.forEach { c -> registerCommand(c) }
+
     fun toggleCommand(command: FocaCommand, enabled: Boolean)
     {
         Validate.notNull(command, msg("error.internal.nullcommand"))
