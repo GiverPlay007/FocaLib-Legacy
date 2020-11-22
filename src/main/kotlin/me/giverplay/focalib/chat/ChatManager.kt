@@ -47,34 +47,13 @@ class ChatManager(private val plugin: FocaLib)
         return chat != null
     }
 
+    private fun tag(tag: String?): String = tag ?: ""
+
     fun sendMessage(c: Channel, sender: Player, message: String?, bukkit_format: String, cancelled: Boolean) {
-        if (!sender.hasPermission("channel." + c.name.toLowerCase() + ".chat") && !sender.hasPermission("admin")) {
-            sender.sendMessage(Messages.msg("error2"))
-            return
-        }
-        if (sender.hasPermission("channel." + c.name.toLowerCase() + ".blockwrite") && !sender.hasPermission(
-                "admin"
-            )
-        ) {
-            sender.sendMessage(Messages.msg("error2"))
-            return
-        }
-        if (c.isFocusNeeded) {
-            if (getPlayerManager().getPlayerFocusedChannel(sender) !== c) {
-                sender.sendMessage(Messages.msg("error12"))
-                return
-            }
-        }
-        val delay = getDelayManager().getPlayerDelayFromChannel(sender.name, c)
         if (delay > 0) {
             sender.sendMessage(
                 Messages.msg("error11").replace("@time", Integer.toString(delay))
             )
-            return
-        }
-
-        if (getMuteManager().isServerMuted) {
-            sender.sendMessage(Messages.msg("mute_error8"))
             return
         }
 
@@ -84,6 +63,7 @@ class ChatManager(private val plugin: FocaLib)
                 recipients.add(p)
             }
         }
+
         val recipients2: MutableSet<Player> = HashSet()
         recipients2.addAll(recipients)
         for (p in recipients2) {
@@ -186,8 +166,6 @@ class ChatManager(private val plugin: FocaLib)
         })
     }
 
-    private fun tag(tag: String?): String = tag ?: ""
-
     private fun realMessage0(e: ChatMessageEvent, c: Channel, gastou: Boolean) {
         if (e.isCancelled) {
             return
@@ -254,6 +232,24 @@ class ChatManager(private val plugin: FocaLib)
         Bukkit.getConsoleSender().sendMessage(completa)
     }
 
+    fun performMessage(player: FocaPlayer, message: String, shortcut: Boolean)
+    {
+        // TODO Check player mute
+
+        val channel: Channel = (if(shortcut) {
+            channelManager.checkChannel(message.toLowerCase())!!
+        } else {
+            player.focusedChannel
+        })
+            ?: return player.sendRaw(msg("error.nochannel")!!)
+
+        if(channel.muted && !player.isAdmin)
+            return player.sendRaw(msg("error.channel-muted")!!)
+
+        if(!player.canUseChannel(channel))
+            return player.sendRaw(msg("error.no-perm-channel", channel.name)!!)
+    }
+
     fun performTell(player: FocaPlayer, other: FocaPlayer, message: Array<out String>)
     {
         val sb: StringBuilder = StringBuilder()
@@ -309,9 +305,5 @@ class ChatManager(private val plugin: FocaLib)
 
         receiver.lastTell = sender
         Bukkit.getConsoleSender().sendMessage(spyFormat.replace("{sender}", sender.name).replace("{receiver}", receiver.name).replace("{msg}", msg))
-    }
-
-    fun performMessage(player: FocaPlayer, message: String, shotcut: Boolean) {
-        // TODO
     }
 }

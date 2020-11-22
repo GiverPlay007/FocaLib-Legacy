@@ -27,6 +27,8 @@ class FocaPlayer(val player: Player)
 
     var lastTell: FocaPlayer? = null
 
+    var isAdmin: Boolean = false
+
     fun hasPermission(permission: String): Boolean = player.hasPermission(permission)
 
     fun hasAnyPermission(vararg perms: String): Boolean

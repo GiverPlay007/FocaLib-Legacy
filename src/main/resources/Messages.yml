@@ -23,9 +23,10 @@ error:
   notnullchannel: '&cEsse canal já existe!'
   nullplayer: '&cJogador desconhecido ou offline'
   nullreply: '&cNinguém para responder'
-  channel-muted: '&cEsse canal já está mutado!'
+  channel-muted: '&cEsse canal está mutado!'
   channel-unmuted: '&cEsse canal já está desmutado!'
   tell-locked: '&cJogador com o tell desabilitado!'
+  no-perm-channel: '&cSem permissão para falar no canal &f{0}'
 
 debug:
   internal:
