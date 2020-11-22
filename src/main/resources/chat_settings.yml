@@ -1,5 +1,4 @@
 default_channel: local
-maintain_spy_mode: false
 format:
   default: '{color}[{nick}] {groupprefix}{rank}{vip}{tag}{clantag}&f{sender}{color}: {msg}'
   spy: '&8[SPY] &7{msg}'

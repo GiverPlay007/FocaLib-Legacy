@@ -8,10 +8,9 @@ import java.io.File
 class ChannelManager(private val plugin: FocaLib, private val chatManager: ChatManager)
 {
     private val channels = HashMap<String, Channel>()
-    private var maintainSpyMode = false
     private var defaultChannel: Channel? = null
     private val formats = HashMap<String, String>()
-    private val pm_formats = HashMap<String, String>()
+    private val tellFormats = HashMap<String, String>()
 
     fun createPermanentChannel(channel: Channel)
     {
@@ -54,6 +53,12 @@ class ChannelManager(private val plugin: FocaLib, private val chatManager: ChatM
 
     fun checkChannel(string: String): Channel?
     {
+        val check: String = string.split(" ")[0].replace("/", "").trim()
+
+        for(channel: Channel in channels.values)
+            if(channel.name.equals(check, ignoreCase = true) || channel.nickname.equals(check[0].toString(), ignoreCase = true))
+                return channel
+
         return null
     }
 
@@ -71,7 +76,7 @@ class ChannelManager(private val plugin: FocaLib, private val chatManager: ChatM
     {
         channels.clear()
 
-        for (channel in File(plugin.dataFolder, "channels").listFiles())
+        for (channel in File(plugin.dataFolder, "channels").listFiles()!!)
         {
             if (channel.name.toLowerCase().endsWith(".yml"))
             {
@@ -102,20 +107,25 @@ class ChannelManager(private val plugin: FocaLib, private val chatManager: ChatM
 
     fun getFormat(base_format: String): String? = formats[base_format.toLowerCase()]
 
-    fun getPrivateMessageFormat(format: String): String? = pm_formats[format.toLowerCase()]
+    fun getPrivateMessageFormat(format: String): String? = tellFormats[format.toLowerCase()]
 
-    fun load() {
-        val file: File = File(plugin.dataFolder, "config.yml")
-        if (!file.exists()) {
+    fun load()
+    {
+        val file = File(plugin.dataFolder, "chat_config.yml")
+
+        if (!file.exists())
+        {
             try {
-                plugin.plugin.saveResource("config_template.yml", false)
-                val file2: File = File(plugin.dataFolder, "config_template.yml")
-                file2.renameTo(File(plugin.dataFolder, "config.yml"))
-            } catch (ignored: Exception) {
+                plugin.plugin.saveResource("chat_settings.yml", false)
+                val file2 = File(plugin.dataFolder, "chat_settings.yml")
+                file2.renameTo(File(plugin.dataFolder, "chat_config.yml"))
+            }
+            catch (ex: Exception) {
+                ex.printStackTrace()
             }
         }
 
-        val channels: File = File(plugin.dataFolder, "channels")
+        val channels = File(plugin.dataFolder, "channels")
 
         if (!channels.exists()) {
             createPermanentChannel(Channel(chatManager, "global", "g", "{default}", '7', true, 0.0, true, 0, 0.0, true, false))
@@ -125,13 +135,15 @@ class ChannelManager(private val plugin: FocaLib, private val chatManager: ChatM
         loadChannels()
 
         val fc = Bukkit.getPluginManager().getPlugin("Legendchat")!!.config
+
         defaultChannel = getChannel(fc.getString("default_channel", "local")!!.toLowerCase())
-        maintainSpyMode = fc.getBoolean("maintain_spy_mode", false)
         formats.clear()
-        pm_formats.clear()
-        for (f in fc.getConfigurationSection("format")!!.getKeys(false)) formats[f.toLowerCase()] =
-            fc.getString("format.$f")!!
-        for (f in fc.getConfigurationSection("private_message_format")!!.getKeys(false)) pm_formats[f.toLowerCase()] =
-            fc.getString("private_message_format.$f")!!
+        tellFormats.clear()
+
+        for (f in fc.getConfigurationSection("format")!!.getKeys(false))
+            formats[f.toLowerCase()] = fc.getString("format.$f")!!
+
+        for (f in fc.getConfigurationSection("private_message_format")!!.getKeys(false))
+            tellFormats[f.toLowerCase()] = fc.getString("private_message_format.$f")!!
     }
 }
